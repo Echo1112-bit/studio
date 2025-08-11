@@ -45,7 +45,11 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col">
-      {renderContent()}
+      {appStatus === 'loading' ? (
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      ) : renderContent()}
     </main>
   );
 }

@@ -17,6 +17,7 @@ const defaultAppData: AppData = {
 interface AppContextType {
   data: AppData;
   coach?: Coach;
+  appStatus: AppStatus;
   setCoach: (coachId: CoachId) => void;
   setGoal: (goal: string) => Promise<void>;
   startPlan: () => void;
@@ -138,13 +139,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
   
   const regeneratePlan = useCallback(() => {
-    updateData({
-      appStatus: 'goal_input',
-      actionPlan: undefined,
-      currentStepIndex: undefined,
-      totalTimeSpent: undefined,
-    });
-  }, [updateData]);
+    if (!data.goal) return;
+    setGoal(data.goal);
+  }, [data.goal, setGoal]);
 
   const toggleDarkMode = useCallback(() => {
     updateData({ darkMode: !data.darkMode });
@@ -158,6 +155,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const value: AppContextType = {
     data,
     coach,
+    appStatus: data.appStatus,
     setCoach,
     setGoal,
     startPlan,
