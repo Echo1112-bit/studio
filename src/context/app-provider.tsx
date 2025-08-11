@@ -2,31 +2,37 @@
 
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { AppData, AppStatus, Coach, CoachId, ActionPlan } from '@/lib/types';
+import type { AppData, AppStatus, Coach, CoachId, Goal } from '@/lib/types';
 import { coaches } from '@/lib/coaches';
 import { generateActionPlan } from '@/ai/flows/personalized-action-plan-generation';
 import { useToast } from '@/hooks/use-toast';
 
-const LOCAL_STORAGE_KEY = 'pro-coach-ai-data';
+const LOCAL_STORAGE_KEY = 'pro-coach-ai-data-v2';
 
 const defaultAppData: AppData = {
   appStatus: 'loading',
+  goals: [],
   darkMode: false,
 };
 
 interface AppContextType {
   data: AppData;
   coach?: Coach;
+  activeGoal?: Goal;
   appStatus: AppStatus;
   setCoach: (coachId: CoachId) => void;
   setGoal: (goal: string) => Promise<void>;
   startPlan: () => void;
+  continueGoal: (goalId: string) => void;
   completeStep: (timeSpent: number) => void;
   nextStep: () => void;
   setNewGoal: () => void;
   regeneratePlan: () => void;
   toggleDarkMode: () => void;
   resetApp: () => void;
+  viewArchive: () => void;
+  exitArchive: () => void;
+  deleteGoal: (goalId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,15 +47,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (storedData) {
         const parsedData: AppData = JSON.parse(storedData);
-        // Ensure status isn't stuck on loading/generating states on reload
-        if (parsedData.appStatus === 'loading' || parsedData.appStatus === 'generating_plan') {
-            if (!parsedData.coachId) {
-                parsedData.appStatus = 'coach_selection';
-            } else if (!parsedData.goal || !parsedData.actionPlan) {
-                parsedData.appStatus = 'goal_input';
-            } else {
-                parsedData.appStatus = 'action_plan';
-            }
+        if (['loading', 'generating_plan'].includes(parsedData.appStatus)) {
+            parsedData.appStatus = parsedData.coachId ? 'goal_input' : 'coach_selection';
         }
         setData(parsedData);
       } else {
@@ -67,8 +66,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
     }
   }, [data, isInitialized]);
-
-  const coach = data.coachId ? coaches[data.coachId] : undefined;
+  
+  const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
+  const coach = activeGoal ? coaches[activeGoal.coachId] : (data.coachId ? coaches[data.coachId] : undefined);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -78,10 +78,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       root.classList.remove('dark');
     }
 
-    if (coach) {
-      root.style.setProperty('--primary', coach.colors.primaryHsl);
+    const currentCoach = data.activeGoalId ? coaches[data.goals.find(g => g.id === data.activeGoalId)!.coachId] : data.coachId ? coaches[data.coachId] : undefined;
+    if (currentCoach) {
+      root.style.setProperty('--primary', currentCoach.colors.primaryHsl);
     }
-  }, [data.darkMode, coach]);
+  }, [data.darkMode, data.coachId, data.activeGoalId, data.goals]);
 
   const updateData = useCallback((newData: Partial<AppData>) => {
     setData((prev) => ({ ...prev, ...newData }));
@@ -91,12 +92,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     updateData({ coachId, appStatus: 'goal_input' });
   }, [updateData]);
 
-  const setGoal = useCallback(async (goal: string) => {
+  const setGoal = useCallback(async (title: string) => {
     if (!data.coachId) return;
-    updateData({ goal, appStatus: 'generating_plan' });
+    updateData({ appStatus: 'generating_plan' });
     try {
-      const plan = await generateActionPlan({ goal, coachPersonality: coaches[data.coachId].name as any });
-      updateData({ actionPlan: plan, appStatus: 'action_plan' });
+      const plan = await generateActionPlan({ goal: title, coachPersonality: coaches[data.coachId].name as any });
+      const newGoal: Goal = {
+        id: new Date().toISOString(),
+        title,
+        coachId: data.coachId,
+        actionPlan: plan,
+        status: 'in-progress',
+        createdAt: new Date().toISOString(),
+        currentStepIndex: -1, // -1 means not started
+        totalTimeSpent: 0,
+        stepHistory: [],
+      };
+      updateData({ 
+        goals: [...data.goals, newGoal],
+        activeGoalId: newGoal.id,
+        appStatus: 'action_plan'
+      });
     } catch (error) {
       console.error('Failed to generate action plan', error);
       toast({
@@ -106,42 +122,87 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
       updateData({ appStatus: 'goal_input' });
     }
-  }, [data.coachId, updateData, toast]);
+  }, [data.coachId, data.goals, updateData, toast]);
 
   const startPlan = useCallback(() => {
-    updateData({ appStatus: 'execution', currentStepIndex: 0, totalTimeSpent: 0 });
+    if (!data.activeGoalId) return;
+    const newGoals = data.goals.map(g => 
+        g.id === data.activeGoalId ? {...g, currentStepIndex: 0} : g
+    );
+    updateData({ appStatus: 'execution', goals: newGoals });
+  }, [updateData, data.activeGoalId, data.goals]);
+
+  const continueGoal = useCallback((goalId: string) => {
+    updateData({ activeGoalId: goalId, appStatus: 'execution' });
   }, [updateData]);
   
   const completeStep = useCallback((timeSpent: number) => {
-    updateData({ 
-        appStatus: 'step_completion',
-        totalTimeSpent: (data.totalTimeSpent || 0) + timeSpent,
+    if (!activeGoal) return;
+    const newGoals = data.goals.map(g => {
+        if (g.id === data.activeGoalId) {
+            return {
+                ...g,
+                totalTimeSpent: g.totalTimeSpent + timeSpent,
+                stepHistory: [...g.stepHistory, {
+                    stepIndex: g.currentStepIndex,
+                    timeSpent,
+                    completedAt: new Date().toISOString()
+                }]
+            }
+        }
+        return g;
     });
-  }, [updateData, data.totalTimeSpent]);
+    updateData({ appStatus: 'step_completion', goals: newGoals });
+  }, [updateData, activeGoal, data.goals, data.activeGoalId]);
 
   const nextStep = useCallback(() => {
-    const nextIndex = (data.currentStepIndex ?? -1) + 1;
-    if (data.actionPlan && nextIndex < data.actionPlan.steps.length) {
-      updateData({ appStatus: 'execution', currentStepIndex: nextIndex });
+    if (!activeGoal) return;
+    const nextIndex = activeGoal.currentStepIndex + 1;
+    
+    if (nextIndex < activeGoal.actionPlan.steps.length) {
+      const newGoals = data.goals.map(g => 
+        g.id === data.activeGoalId ? {...g, currentStepIndex: nextIndex} : g
+      );
+      updateData({ appStatus: 'execution', goals: newGoals });
     } else {
-      updateData({ appStatus: 'final_celebration' });
+       const newGoals = data.goals.map(g => 
+        g.id === data.activeGoalId ? {
+            ...g, 
+            status: 'completed' as 'completed', 
+            completedAt: new Date().toISOString()
+        } : g
+      );
+      updateData({ appStatus: 'final_celebration', goals: newGoals });
     }
-  }, [data.currentStepIndex, data.actionPlan, updateData]);
+  }, [activeGoal, data.goals, data.activeGoalId, updateData]);
 
   const setNewGoal = useCallback(() => {
     updateData({
       appStatus: 'goal_input',
-      goal: undefined,
-      actionPlan: undefined,
-      currentStepIndex: undefined,
-      totalTimeSpent: undefined,
+      activeGoalId: undefined,
     });
   }, [updateData]);
   
-  const regeneratePlan = useCallback(() => {
-    if (!data.goal) return;
-    setGoal(data.goal);
-  }, [data.goal, setGoal]);
+  const regeneratePlan = useCallback(async () => {
+    if (!activeGoal) return;
+    const { title, coachId } = activeGoal;
+    updateData({ appStatus: 'generating_plan' });
+    try {
+      const plan = await generateActionPlan({ goal: title, coachPersonality: coaches[coachId].name as any });
+      const newGoals = data.goals.map(g => 
+        g.id === data.activeGoalId ? {...g, actionPlan: plan} : g
+      );
+      updateData({ goals: newGoals, appStatus: 'action_plan' });
+    } catch (error) {
+      console.error('Failed to regenerate action plan', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not regenerate the plan. Please try again.',
+      });
+      updateData({ appStatus: 'action_plan' });
+    }
+  }, [activeGoal, data.activeGoalId, data.goals, updateData, toast]);
 
   const toggleDarkMode = useCallback(() => {
     updateData({ darkMode: !data.darkMode });
@@ -152,19 +213,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setData({ ...defaultAppData, appStatus: 'coach_selection' });
   }, []);
 
+  const viewArchive = useCallback(() => {
+    updateData({ appStatus: 'archive' });
+  }, [updateData]);
+
+  const exitArchive = useCallback(() => {
+    updateData({ appStatus: 'goal_input' });
+  }, [updateData]);
+
+  const deleteGoal = useCallback((goalId: string) => {
+    const newGoals = data.goals.filter(g => g.id !== goalId);
+    let newActiveGoalId = data.activeGoalId;
+    if (data.activeGoalId === goalId) {
+      newActiveGoalId = undefined;
+    }
+    updateData({ goals: newGoals, activeGoalId: newActiveGoalId });
+  }, [data.goals, data.activeGoalId, updateData]);
+
   const value: AppContextType = {
     data,
     coach,
+    activeGoal,
     appStatus: data.appStatus,
     setCoach,
     setGoal,
     startPlan,
+    continueGoal,
     completeStep,
     nextStep,
     setNewGoal,
     regeneratePlan,
     toggleDarkMode,
     resetApp,
+    viewArchive,
+    exitArchive,
+    deleteGoal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

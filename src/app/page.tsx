@@ -7,6 +7,7 @@ import ActionPlan from '@/components/views/action-plan';
 import Execution from '@/components/views/execution';
 import StepCompletion from '@/components/views/step-completion';
 import FinalCelebration from '@/components/views/final-celebration';
+import Archive from '@/components/views/archive';
 import { Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -34,6 +35,8 @@ export default function Home() {
         return <StepCompletion />;
       case 'final_celebration':
         return <FinalCelebration />;
+      case 'archive':
+        return <Archive />;
       default:
         return (
            <div className="flex flex-1 flex-col items-center justify-center">

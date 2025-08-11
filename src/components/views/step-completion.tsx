@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function StepCompletion() {
-  const { data, coach, nextStep } = useAppContext();
+  const { activeGoal, coach, nextStep } = useAppContext();
   const [celebration, setCelebration] = useState('🎉 Nice!');
 
   useEffect(() => {
@@ -18,12 +18,13 @@ export default function StepCompletion() {
     }
   }, [coach]);
   
-  if (!coach || !data.actionPlan || data.currentStepIndex === undefined) return null;
+  if (!coach || !activeGoal) return null;
 
-  const completedStep = data.actionPlan.steps[data.currentStepIndex];
-  const nextStepItem = data.actionPlan.steps[data.currentStepIndex + 1];
-  const totalSteps = data.actionPlan.steps.length;
-  const progress = data.currentStepIndex + 1;
+  const completedStepIndex = activeGoal.currentStepIndex;
+  const completedStep = activeGoal.actionPlan.steps[completedStepIndex];
+  const nextStepItem = activeGoal.actionPlan.steps[completedStepIndex + 1];
+  const totalSteps = activeGoal.actionPlan.steps.length;
+  const progress = completedStepIndex + 1;
 
   const getProgressText = () => {
     const percentage = (progress / totalSteps) * 100;
@@ -53,7 +54,7 @@ export default function StepCompletion() {
         {nextStepItem && (
           <Card className="w-full text-left bg-background/70">
             <CardHeader>
-              <CardDescription>Up next:</CardDescription>
+              <p className="text-sm text-muted-foreground">Up next:</p>
               <CardTitle className="text-lg">{nextStepItem.actionTitle}</CardTitle>
             </CardHeader>
           </Card>
@@ -74,7 +75,7 @@ export default function StepCompletion() {
           className="w-full h-12 text-lg font-bold"
           style={{ backgroundColor: coach.colors.primary }}
         >
-          Continue →
+          {nextStepItem ? 'Continue →' : 'Finish Goal!'}
         </Button>
       </div>
     </div>

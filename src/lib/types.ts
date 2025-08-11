@@ -32,6 +32,27 @@ export interface ActionPlan {
   coachComment: string;
 }
 
+export type GoalStatus = 'in-progress' | 'completed';
+
+export interface StepHistory {
+  stepIndex: number;
+  timeSpent: number;
+  completedAt: string;
+}
+
+export interface Goal {
+    id: string;
+    title: string;
+    coachId: CoachId;
+    actionPlan: ActionPlan;
+    status: GoalStatus;
+    createdAt: string;
+    completedAt?: string;
+    currentStepIndex: number;
+    totalTimeSpent: number;
+    stepHistory: StepHistory[];
+}
+
 export type AppStatus =
   | 'loading'
   | 'coach_selection'
@@ -40,14 +61,13 @@ export type AppStatus =
   | 'action_plan'
   | 'execution'
   | 'step_completion'
-  | 'final_celebration';
+  | 'final_celebration'
+  | 'archive';
 
 export interface AppData {
   appStatus: AppStatus;
   coachId?: CoachId;
-  goal?: string;
-  actionPlan?: ActionPlan;
-  currentStepIndex?: number;
-  totalTimeSpent?: number;
+  activeGoalId?: string;
+  goals: Goal[];
   darkMode: boolean;
 }

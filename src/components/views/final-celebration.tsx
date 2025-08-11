@@ -3,15 +3,15 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
-import { Check, Clock, Goal } from 'lucide-react';
+import { Check, Clock, Goal as GoalIcon } from 'lucide-react';
 
 export default function FinalCelebration() {
-  const { data, coach, setNewGoal } = useAppContext();
+  const { activeGoal, coach, setNewGoal, viewArchive } = useAppContext();
 
-  if (!coach || !data.goal || !data.actionPlan) return null;
+  if (!coach || !activeGoal) return null;
 
-  const totalSteps = data.actionPlan.steps.length;
-  const totalTimeMinutes = Math.floor((data.totalTimeSpent || 0) / 60);
+  const totalSteps = activeGoal.actionPlan.steps.length;
+  const totalTimeMinutes = Math.floor(activeGoal.totalTimeSpent / 60);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-6 text-center" style={{ backgroundColor: `${coach.colors.primary}26`}}>
@@ -27,10 +27,10 @@ export default function FinalCelebration() {
         <Card className="text-left shadow-lg">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-3">
-              <Goal className="h-5 w-5 text-primary" />
+              <GoalIcon className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Achievement</p>
-                <p className="font-semibold">{data.goal}</p>
+                <p className="font-semibold">{activeGoal.title}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -59,11 +59,11 @@ export default function FinalCelebration() {
             Set New Goal
           </Button>
           <Button 
-            onClick={setNewGoal}
+            onClick={viewArchive}
             variant="ghost"
             className="text-muted-foreground"
           >
-            Done for Now
+            View Archives
           </Button>
         </div>
       </footer>

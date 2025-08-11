@@ -6,16 +6,16 @@ import { useAppContext } from '@/context/app-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function ActionPlan() {
-  const { data, coach, startPlan, regeneratePlan } = useAppContext();
+  const { activeGoal, coach, startPlan, regeneratePlan } = useAppContext();
 
-  if (!coach || !data.goal || !data.actionPlan) return null;
+  if (!coach || !activeGoal || !activeGoal.actionPlan) return null;
 
   return (
     <div className="flex flex-1 flex-col">
       <header className="p-4 border-b">
         <h1 className="text-xl font-bold text-center">Your Action Plan 📋</h1>
         <p className="text-center text-muted-foreground mt-1 text-sm">
-          <strong>Today's Goal:</strong> {data.goal}
+          <strong>Today's Goal:</strong> {activeGoal.title}
         </p>
       </header>
       
@@ -25,12 +25,12 @@ export default function ActionPlan() {
             <span className="text-3xl mt-1">{coach.emoji}</span>
             <div>
               <p className="font-semibold">{coach.name} says:</p>
-              <p className="text-muted-foreground italic">"{data.actionPlan.coachComment}"</p>
+              <p className="text-muted-foreground italic">"{activeGoal.actionPlan.coachComment}"</p>
             </div>
           </div>
           
           <div className="space-y-3">
-            {data.actionPlan.steps.map((step) => (
+            {activeGoal.actionPlan.steps.map((step) => (
               <Card key={step.stepNumber}>
                 <CardHeader className="p-3">
                   <CardTitle className="text-base flex items-start gap-3">
@@ -47,7 +47,7 @@ export default function ActionPlan() {
           </div>
 
           <p className="text-center font-bold text-lg mt-4">
-            Total Estimated Time: {data.actionPlan.totalTimeEstimate}
+            Total Estimated Time: {activeGoal.actionPlan.totalTimeEstimate}
           </p>
         </div>
       </ScrollArea>

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Execution() {
-  const { data, coach, completeStep } = useAppContext();
+  const { activeGoal, coach, completeStep } = useAppContext();
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -16,13 +16,13 @@ export default function Execution() {
       setSeconds((s) => s + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [data.currentStepIndex]);
+  }, [activeGoal?.currentStepIndex]);
 
-  if (!coach || !data.actionPlan || data.currentStepIndex === undefined) return null;
+  if (!coach || !activeGoal || activeGoal.currentStepIndex === -1) return null;
 
-  const currentStep = data.actionPlan.steps[data.currentStepIndex];
-  const upcomingSteps = data.actionPlan.steps.slice(data.currentStepIndex + 1);
-  const totalSteps = data.actionPlan.steps.length;
+  const currentStep = activeGoal.actionPlan.steps[activeGoal.currentStepIndex];
+  const upcomingSteps = activeGoal.actionPlan.steps.slice(activeGoal.currentStepIndex + 1);
+  const totalSteps = activeGoal.actionPlan.steps.length;
 
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -34,7 +34,7 @@ export default function Execution() {
     <div className="flex flex-1 flex-col bg-muted">
       <header className="p-4 text-center">
         <p className="text-sm text-muted-foreground">Today's Goal</p>
-        <h1 className="font-bold text-lg truncate">{data.goal}</h1>
+        <h1 className="font-bold text-lg truncate">{activeGoal.title}</h1>
       </header>
 
       <main className="flex-1 p-4 flex flex-col gap-4">
@@ -87,13 +87,13 @@ export default function Execution() {
         <div className="flex justify-center items-center gap-2">
             {Array.from({ length: totalSteps }).map((_, i) => (
                 <div key={i} className={cn("h-2.5 w-2.5 rounded-full transition-colors", 
-                    i < data.currentStepIndex! ? 'bg-primary' : 
-                    i === data.currentStepIndex! ? 'bg-primary/50 scale-125' : 
+                    i < activeGoal.currentStepIndex! ? 'bg-primary' : 
+                    i === activeGoal.currentStepIndex! ? 'bg-primary/50 scale-125' : 
                     'bg-muted-foreground/30'
                 )} />
             ))}
         </div>
-        <p className="text-sm text-muted-foreground mt-2">Step {data.currentStepIndex + 1} of {totalSteps}</p>
+        <p className="text-sm text-muted-foreground mt-2">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</p>
       </footer>
     </div>
   );

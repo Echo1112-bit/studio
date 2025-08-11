@@ -26,6 +26,7 @@ import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
+import type { CoachId } from '@/lib/types';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -33,7 +34,14 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { data, coach, toggleDarkMode, setCoach, resetApp } = useAppContext();
+  const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp } = useAppContext();
+
+  const handleSetCoach = (coachId: CoachId) => {
+    setCoach(coachId);
+    onClose();
+  };
+
+  const coachForDisplay = currentCoach || (data.coachId ? coaches[data.coachId] : coachList[0]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -41,7 +49,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         <DialogHeader className="text-left">
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            {coach?.emoji} {coach?.name} says: "Adjust things as you see fit."
+            {coachForDisplay.emoji} {coachForDisplay.name} says: "Adjust things as you see fit."
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
@@ -51,7 +59,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               {coachList.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => setCoach(c.id)}
+                  onClick={() => handleSetCoach(c.id)}
                   className={cn(
                     'flex items-center gap-2 rounded-lg border p-2 text-left transition-all',
                     data.coachId === c.id
