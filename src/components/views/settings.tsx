@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Bell, Trash2, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, Bell, Trash2, Sun, Moon, Clock } from 'lucide-react';
 
 export default function Settings() {
   const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting, exitSettings } = useAppContext();
@@ -68,6 +69,23 @@ export default function Settings() {
                 </Label>
                 <Button variant="link" className="text-xs h-auto p-0">Change</Button>
              </div>
+          </div>
+
+          <div className="space-y-2 rounded-lg border p-3 bg-background">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="show-timer" className="font-normal flex items-center gap-2 text-foreground">
+                <Clock className="h-4 w-4" />
+                <div>
+                  <p>Show Timer</p>
+                  <p className="text-xs text-muted-foreground">Display timer during focus sessions.</p>
+                </div>
+              </Label>
+              <Switch
+                id="show-timer"
+                checked={data.settings.showTimer}
+                onCheckedChange={(value) => updateSetting('showTimer', value)}
+              />
+            </div>
           </div>
         
           <AlertDialog>
