@@ -8,17 +8,15 @@ import { Settings, BookOpen, User } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { SettingsModal } from '@/components/settings-modal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { coaches } from '@/lib/coaches';
 
 export default function GoalInput() {
-  const { coach, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
+  const { data, coach, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // This component can be rendered without a coach if we come from the archive page
-  const displayCoach = coach || {
-    id: 'luna', name: 'ProCoach', emoji: '🎯', title: 'Your Coach', serviceEmoji: '✨', examples: ['Plan my week', 'Write a blog post'],
-    colors: { primary: '#1e3a8a' }
-  };
+  const displayCoach = coach || coaches[data.coachId || 'luna'];
 
   const handleGenerate = () => {
     if (goalText.trim()) {
