@@ -68,7 +68,7 @@ export function GoalDetailsModal({ goal, onClose }: GoalDetailsModalProps) {
                     return (
                         <div
                             key={step.stepNumber}
-                            className="flex items-start gap-3 p-2 rounded-md cursor-pointer hover:bg-secondary transition-colors"
+                            className="flex items-start gap-3 p-3 rounded-lg cursor-pointer hover:bg-secondary transition-colors"
                             onClick={() => toggleStepCompletion(goal.id, step.stepNumber)}
                         >
                             <div>
@@ -78,7 +78,7 @@ export function GoalDetailsModal({ goal, onClose }: GoalDetailsModalProps) {
                                     <Circle className="h-5 w-5 text-muted-foreground/50 mt-0.5" />
                                 )}
                             </div>
-                            <div className={cn('transition-all', isCompleted && 'text-muted-foreground/50 line-through')}>
+                            <div className={cn('transition-all', isCompleted && 'text-muted-foreground line-through opacity-60')}>
                                 <p className="font-semibold">{step.emoji} {step.actionTitle}</p>
                                 <p className="text-sm italic">"{step.coachGuidance}"</p>
                             </div>
