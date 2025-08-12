@@ -32,7 +32,7 @@ const ActionPlanOutputSchema = z.object({
     })
   ).describe('A list of action steps with guidance and time estimates.'),
   totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased encouragingly (e.g., "Around 30 minutes").'),
-  coachComment: z.string().describe('An introductory comment from the coach regarding the generated plan, between 15-25 words.'),
+  coachComment: z.string().describe('A very concise introductory comment from the coach regarding the generated plan, between 10-20 words.'),
 });
 export type ActionPlanOutput = z.infer<typeof ActionPlanOutputSchema>;
 
@@ -51,7 +51,7 @@ You will generate an action plan consisting of 3-10 micro-tasks. Each task has t
 2.  **actionTitle**: A concise action instruction (6-10 words).
 3.  **coachGuidance**: Emotional support and encouragement (12-20 words).
 
-The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 15-25 words.
+The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 10-20 words.
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
