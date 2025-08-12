@@ -89,15 +89,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return;
     };
 
-    if (isInitialized) return;
+    if (isInitialized && user) return;
 
     try {
       const storedData = localStorage.getItem(key);
       if (storedData) {
         const parsedData: AppData = JSON.parse(storedData);
-        if (['loading', 'generating_plan', 'execution', 'step_completion'].includes(parsedData.appStatus)) {
-            parsedData.appStatus = parsedData.coachId ? 'goal_input' : 'coach_selection';
-        }
+        // Always start at goal input page after login
+        parsedData.appStatus = parsedData.coachId ? 'goal_input' : 'coach_selection';
+        parsedData.activeGoalId = undefined; // Clear any active goal from previous session
+        
         parsedData.settings = { ...defaultSettings, ...parsedData.settings };
         parsedData.bestStreak = parsedData.bestStreak || 0;
         setData(parsedData);
@@ -109,7 +110,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       console.error('Failed to load data from local storage', error);
       setData({ ...defaultAppData, appStatus: 'coach_selection' });
     }
-    setIsInitialized(true);
+    if (user) {
+        setIsInitialized(true);
+    }
   }, [user, getLocalStorageKey, isInitialized]);
 
   useEffect(() => {
@@ -186,7 +189,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }, 0);
 
     const totalStepsForInProgressGoals = inProgressGoals.reduce((acc, goal) => acc + goal.actionPlan.steps.length, 0);
-    const totalStepsCompletedForInProgressGoals = inProgressGoals.reduce((acc, goal) => acc + goal.currentStepIndex, 0);
+    const totalStepsCompletedForInProgressGoals = inProgressGoals.reduce((acc, goal) => acc + (goal.currentStepIndex > 0 ? goal.currentStepIndex : 0), 0);
     
     const totalGoals = allGoals.length;
     const totalSteps = allGoals.reduce((sum, goal) => sum + goal.actionPlan.steps.length, 0);
