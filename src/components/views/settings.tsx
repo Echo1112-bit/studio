@@ -17,13 +17,15 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/context/app-provider';
+import { useAuth } from '@/context/auth-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Trash2, Sun, Moon, Clock, Bell } from 'lucide-react';
+import { ArrowLeft, Trash2, Sun, Moon, Clock, Bell, LogOut } from 'lucide-react';
 import { TimePickerSheet } from '@/components/time-picker-sheet';
 
 export default function Settings() {
   const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting, exitSettings } = useAppContext();
+  const { signOut } = useAuth();
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
 
   const coachForDisplay = currentCoach || (data.coachId ? coaches[data.coachId] : coachList[0]);
@@ -118,6 +120,11 @@ export default function Settings() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          
+          <Button variant="destructive" className="w-full justify-start" onClick={signOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
       </div>
     </div>
     <TimePickerSheet 

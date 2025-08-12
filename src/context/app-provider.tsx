@@ -4,12 +4,13 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { AppData, AppSettings, AppStatus, Coach, CoachId, Goal } from '@/lib/types';
-import { coaches } from '@/lib/coaches';
+import { coaches, coachList } from '@/lib/coaches';
 import { generateActionPlan } from '@/ai/flows/personalized-action-plan-generation';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from './auth-provider';
 import { isSameDay, startOfWeek, differenceInCalendarDays } from 'date-fns';
 
-const LOCAL_STORAGE_KEY = 'pro-coach-ai-data-v3';
+const LOCAL_STORAGE_KEY_PREFIX = 'pro-coach-ai-data-v3';
 
 const defaultSettings: AppSettings = {
     showTimer: true,
@@ -59,13 +60,27 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const [data, setData] = useState<AppData>(defaultAppData);
   const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useToast();
 
+  const getLocalStorageKey = useCallback(() => {
+    if (!user) return null;
+    return `${LOCAL_STORAGE_KEY_PREFIX}-${user.uid}`;
+  }, [user]);
+
   useEffect(() => {
+    const key = getLocalStorageKey();
+    if (!key) {
+      if(user === null) { // User is logged out
+        setData(defaultAppData);
+      }
+      return;
+    };
+
     try {
-      const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const storedData = localStorage.getItem(key);
       if (storedData) {
         const parsedData: AppData = JSON.parse(storedData);
         if (['loading', 'generating_plan'].includes(parsedData.appStatus)) {
@@ -74,20 +89,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         parsedData.settings = { ...defaultSettings, ...parsedData.settings };
         setData(parsedData);
       } else {
-        setData({ ...defaultAppData, appStatus: 'coach_selection' });
+        const initialStatus = coachList.length > 0 ? 'coach_selection' : 'loading';
+        setData({ ...defaultAppData, appStatus: initialStatus });
       }
     } catch (error) {
       console.error('Failed to load data from local storage', error);
       setData({ ...defaultAppData, appStatus: 'coach_selection' });
     }
     setIsInitialized(true);
-  }, []);
+  }, [user, getLocalStorageKey]);
 
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    const key = getLocalStorageKey();
+    if (isInitialized && key) {
+      localStorage.setItem(key, JSON.stringify(data));
     }
-  }, [data, isInitialized]);
+  }, [data, isInitialized, getLocalStorageKey]);
   
   const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
   const coach = data.coachId ? coaches[data.coachId] : (activeGoal ? coaches[activeGoal.coachId] : undefined);
@@ -268,9 +285,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [data.darkMode, updateData]);
   
   const resetApp = useCallback(() => {
-    localStorage.removeItem('some-temporary-key'); 
-    toast({ title: "Cache Cleared", description: "Temporary application data has been removed." });
-  }, [toast]);
+    const key = getLocalStorageKey();
+    if(key) {
+        localStorage.removeItem(key);
+    }
+    setData(defaultAppData);
+    toast({ title: "Cache Cleared", description: "Application data has been reset." });
+  }, [toast, getLocalStorageKey]);
 
   const viewArchive = useCallback(() => {
     updateData({ appStatus: 'archive' });

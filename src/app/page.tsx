@@ -2,6 +2,7 @@
 'use client';
 
 import { useAppContext } from '@/context/app-provider';
+import { useAuth } from '@/context/auth-provider';
 import CoachSelection from '@/components/views/coach-selection';
 import GoalInput from '@/components/views/goal-input';
 import ActionPlan from '@/components/views/action-plan';
@@ -11,12 +12,18 @@ import FinalCelebration from '@/components/views/final-celebration';
 import Archive from '@/components/views/archive';
 import PersonalCenter from '@/components/views/personal-center';
 import Settings from '@/components/views/settings';
+import Login from '@/components/views/login';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
+  const { user } = useAuth();
   const { appStatus, coach } = useAppContext();
+
+  if (!user) {
+    return <Login />;
+  }
 
   const renderContent = () => {
     switch (appStatus) {

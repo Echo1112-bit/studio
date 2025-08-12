@@ -56,6 +56,7 @@ export interface Goal {
 
 export type AppStatus =
   | 'loading'
+  | 'login'
   | 'coach_selection'
   | 'goal_input'
   | 'generating_plan'
