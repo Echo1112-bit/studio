@@ -14,13 +14,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Bell, Clock, Trash2, Timer, Sun, Moon } from 'lucide-react';
-import type { CoachId } from '@/lib/types';
+import { ArrowLeft, Bell, Trash2, Sun, Moon } from 'lucide-react';
 
 export default function Settings() {
   const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting, exitSettings } = useAppContext();
@@ -72,45 +69,31 @@ export default function Settings() {
                 <Button variant="link" disabled className="text-xs h-auto p-0">Change</Button>
              </div>
           </div>
-
-          <div className="flex items-center justify-between rounded-lg border p-3 bg-background">
-            <div className="space-y-1">
-                <Label htmlFor="show-timer" className="font-semibold flex items-center gap-2">
-                    <Timer className="h-4 w-4" /> Show Timer
-                </Label>
-                <p className="text-xs text-muted-foreground">Display timer during focus sessions.</p>
-            </div>
-            <Switch
-              id="show-timer"
-              checked={data.settings.showTimer}
-              onCheckedChange={(checked) => updateSetting('showTimer', checked)}
-            />
-          </div>
-          <div className="space-y-2 rounded-lg border p-3 bg-background">
-            <h3 className="font-semibold flex items-center gap-2"><Trash2 className="h-4 w-4" /> Clear Cache</h3>
-            <p className="text-sm text-muted-foreground">This will clear temporary data but preserve goals and settings.</p>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" className="w-full">Clear Cache</Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action will clear temporary app data. Your goals will not be deleted.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {
-                      resetApp();
-                  }}>
-                    Yes, clear cache
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+        
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="w-full justify-start bg-background">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear Cache
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action will clear temporary app data. Your goals will not be deleted.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                    resetApp();
+                }}>
+                  Yes, clear cache
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
       </div>
     </div>
   );
