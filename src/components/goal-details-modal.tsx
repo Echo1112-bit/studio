@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -79,7 +78,7 @@ export function GoalDetailsModal({ goal, onClose }: GoalDetailsModalProps) {
                                     <Circle className="h-5 w-5 text-muted-foreground/50 mt-0.5" />
                                 )}
                             </div>
-                            <div className={cn('transition-all', isCompleted && 'text-muted-foreground line-through')}>
+                            <div className={cn('transition-all', isCompleted && 'text-muted-foreground/50 line-through')}>
                                 <p className="font-semibold">{step.emoji} {step.actionTitle}</p>
                                 <p className="text-sm italic">"{step.coachGuidance}"</p>
                             </div>
@@ -94,12 +93,6 @@ export function GoalDetailsModal({ goal, onClose }: GoalDetailsModalProps) {
             <Button variant="outline" onClick={onClose}>Close</Button>
         </div>
         
-        <DialogClose asChild>
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4 h-8 w-8">
-            <X className="h-5 w-5" />
-            <span className="sr-only">Close</span>
-          </Button>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );
