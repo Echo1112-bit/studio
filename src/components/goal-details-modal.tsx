@@ -130,7 +130,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
                                     "flex items-start gap-3 p-3 rounded-lg transition-all duration-200",
                                     !isCompleted && "cursor-pointer hover:bg-secondary"
                                 )}
-                                onClick={() => !isCompleted && toggleStepCompletion(goal.id, step.stepNumber)}
+                                onClick={() => toggleStepCompletion(goal.id, step.stepNumber)}
                             >
                                 <div>
                                     {isStepCompleted ? (
@@ -160,10 +160,10 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
             )}
         </div>
         
-        <div className="grid grid-cols-10 gap-3 p-4 border-t mt-auto">
+        <div className="grid grid-cols-3 gap-3 p-4 border-t mt-auto">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="col-span-3">
+                    <Button variant="outline" className="col-span-1">
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">More</span>
                     </Button>
@@ -183,12 +183,12 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
             </DropdownMenu>
 
             {isCompleted ? (
-                 <Button onClick={handleStartAnother} className="col-span-7">
+                 <Button onClick={handleStartAnother} className="col-span-2">
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Start Another
                 </Button>
             ) : (
-                <Button onClick={handleContinue} className="col-span-7">Continue</Button>
+                <Button onClick={handleContinue} className="col-span-2">Continue</Button>
             )}
         </div>
         
