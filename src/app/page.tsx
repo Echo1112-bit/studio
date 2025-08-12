@@ -10,6 +10,7 @@ import StepCompletion from '@/components/views/step-completion';
 import FinalCelebration from '@/components/views/final-celebration';
 import Archive from '@/components/views/archive';
 import PersonalCenter from '@/components/views/personal-center';
+import Settings from '@/components/views/settings';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -48,6 +49,8 @@ export default function Home() {
         return <Archive />;
       case 'personal_center':
         return <PersonalCenter />;
+      case 'settings':
+        return <Settings />;
       default:
         return (
            <div className="flex flex-1 flex-col items-center justify-center">

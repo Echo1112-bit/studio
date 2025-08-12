@@ -64,7 +64,8 @@ export type AppStatus =
   | 'step_completion'
   | 'final_celebration'
   | 'archive'
-  | 'personal_center';
+  | 'personal_center'
+  | 'settings';
 
 export interface AppSettings {
     showTimer: boolean;

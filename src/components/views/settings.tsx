@@ -2,14 +2,6 @@
 'use client';
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from '@/components/ui/dialog';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -27,43 +19,33 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { X, Bell, Clock, Trash2, Timer } from 'lucide-react';
+import { ArrowLeft, Bell, Clock, Trash2, Timer } from 'lucide-react';
 import type { CoachId } from '@/lib/types';
 
-interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting } = useAppContext();
-
-  const handleSetCoach = (coachId: CoachId) => {
-    setCoach(coachId);
-    onClose();
-  };
+export default function Settings() {
+  const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting, exitSettings } = useAppContext();
 
   const coachForDisplay = currentCoach || (data.coachId ? coaches[data.coachId] : coachList[0]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[370px] rounded-2xl">
-        <DialogHeader className="text-left">
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            {coachForDisplay.emoji} {coachForDisplay.name} says: "Adjust things as you see fit."
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-6 py-4">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Switch Coach</h3>
+    <div className="flex flex-1 flex-col bg-muted">
+      <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
+        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitSettings}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Settings</h1>
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="space-y-4">
+            <h3 className="font-semibold text-foreground px-1">Switch Coach</h3>
             <div className="grid grid-cols-2 gap-2">
               {coachList.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => handleSetCoach(c.id)}
+                  onClick={() => setCoach(c.id)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg border p-2 text-left transition-all',
+                    'flex items-center gap-2 rounded-lg border p-2 text-left transition-all bg-background',
                     data.coachId === c.id
                       ? 'border-primary ring-2 ring-primary shadow-lg'
                       : 'hover:bg-secondary'
@@ -79,7 +61,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-lg border p-3">
+          <div className="space-y-4 rounded-lg border p-3 bg-background">
              <h3 className="font-semibold flex items-center gap-2"><Bell className="h-4 w-4" /> Daily Reminders</h3>
              <div>
                 <Label className="font-normal text-muted-foreground">How much support do you need?</Label>
@@ -116,7 +98,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
              </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="flex items-center justify-between rounded-lg border p-3 bg-background">
             <Label htmlFor="dark-mode" className="font-semibold flex items-center gap-2">
               Dark Mode
             </Label>
@@ -126,7 +108,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               onCheckedChange={toggleDarkMode}
             />
           </div>
-          <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="flex items-center justify-between rounded-lg border p-3 bg-background">
             <div className="space-y-1">
                 <Label htmlFor="show-timer" className="font-semibold flex items-center gap-2">
                     <Timer className="h-4 w-4" /> Show Timer
@@ -139,7 +121,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               onCheckedChange={(checked) => updateSetting('showTimer', checked)}
             />
           </div>
-          <div className="space-y-2 rounded-lg border p-3">
+          <div className="space-y-2 rounded-lg border p-3 bg-background">
             <h3 className="font-semibold flex items-center gap-2"><Trash2 className="h-4 w-4" /> Clear Cache</h3>
             <p className="text-sm text-muted-foreground">This will clear temporary data but preserve goals and settings.</p>
             <AlertDialog>
@@ -156,8 +138,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => {
-                      resetApp(); // This function is now used for cache clearing
-                      onClose();
+                      resetApp();
                   }}>
                     Yes, clear cache
                   </AlertDialogAction>
@@ -165,12 +146,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        </div>
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

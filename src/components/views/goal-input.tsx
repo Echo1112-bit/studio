@@ -6,14 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, BookOpen, User } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
-import { SettingsModal } from '@/components/settings-modal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { coaches } from '@/lib/coaches';
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings } = useAppContext();
   const [goalText, setGoalText] = useState('');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const displayCoach = coach || (data.coachId ? coaches[data.coachId] : null);
 
@@ -24,8 +22,6 @@ export default function GoalInput() {
   };
   
   if (!displayCoach) {
-    // This can happen briefly if navigating back from another screen before context updates.
-    // Or if there's no coachId set. A loading or default state could go here.
     return null; 
   }
 
@@ -40,13 +36,13 @@ export default function GoalInput() {
             <Button variant="ghost" size="icon" onClick={viewArchive}>
               <BookOpen className="h-6 w-6" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}>
+            <Button variant="ghost" size="icon" onClick={viewSettings}>
               <Settings className="h-6 w-6" />
             </Button>
           </div>
         </header>
 
-        <main className="flex-1 flex-col">
+        <main className="flex-1 flex flex-col pt-8">
             <div className="text-center mb-4">
                 <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{displayCoach.emoji}</div>
                 <p className="font-bold text-2xl">
@@ -85,15 +81,13 @@ export default function GoalInput() {
                 <CardContent>
                     <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                     {displayCoach.examples.map((ex, i) => (
-                        <li key={i} className="whitespace-pre-wrap">{ex}</li>
+                        <li key={i}>{ex}</li>
                     ))}
                     </ul>
                 </CardContent>
             </Card>
-
         </main>
       </div>
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>
   );
 }

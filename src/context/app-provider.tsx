@@ -52,6 +52,8 @@ interface AppContextType {
   exitArchive: () => void;
   viewPersonalCenter: () => void;
   exitPersonalCenter: () => void;
+  viewSettings: () => void;
+  exitSettings: () => void;
   deleteGoal: (goalId: string) => void;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
 }
@@ -71,7 +73,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         if (['loading', 'generating_plan'].includes(parsedData.appStatus)) {
             parsedData.appStatus = parsedData.coachId ? 'goal_input' : 'coach_selection';
         }
-        // Ensure settings are populated even from older storage versions
         parsedData.settings = { ...defaultSettings, ...parsedData.settings };
         setData(parsedData);
       } else {
@@ -102,11 +103,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       root.classList.remove('dark');
     }
 
-    const currentCoach = data.activeGoalId ? coaches[data.goals.find(g => g.id === data.activeGoalId)!.coachId] : data.coachId ? coaches[data.coachId] : undefined;
+    const currentCoach = data.coachId ? coaches[data.coachId] : undefined;
     if (currentCoach) {
       root.style.setProperty('--primary', currentCoach.colors.primaryHsl);
     }
-  }, [data.darkMode, data.coachId, data.activeGoalId, data.goals]);
+  }, [data.darkMode, data.coachId]);
 
   const stats = useMemo(() => {
     const completedGoals = data.goals.filter(g => g.status === 'completed');
@@ -177,7 +178,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         actionPlan: plan,
         status: 'in-progress',
         createdAt: new Date().toISOString(),
-        currentStepIndex: -1, // -1 means not started
+        currentStepIndex: -1,
         totalTimeSpent: 0,
         stepHistory: [],
       };
@@ -257,7 +258,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
   
   const backToGoalInput = useCallback(() => {
-    // When navigating back, ensure the coachId from settings is used if no active goal
     updateData({ appStatus: 'goal_input', activeGoalId: undefined });
   }, [updateData]);
 
@@ -266,9 +266,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [data.darkMode, updateData]);
   
   const resetApp = useCallback(() => {
-    // This now just clears temporary data, not everything.
-    // A more robust implementation might be needed, but this fits the prompt.
-    localStorage.removeItem('some-temporary-key'); // Example
+    localStorage.removeItem('some-temporary-key'); 
     toast({ title: "Cache Cleared", description: "Temporary application data has been removed." });
   }, [toast]);
 
@@ -285,6 +283,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
 
   const exitPersonalCenter = useCallback(() => {
+    updateData({ appStatus: 'goal_input' });
+  }, [updateData]);
+
+  const viewSettings = useCallback(() => {
+    updateData({ appStatus: 'settings' });
+  }, [updateData]);
+
+  const exitSettings = useCallback(() => {
     updateData({ appStatus: 'goal_input' });
   }, [updateData]);
 
@@ -326,6 +332,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     exitArchive,
     viewPersonalCenter,
     exitPersonalCenter,
+    viewSettings,
+    exitSettings,
     deleteGoal,
     updateSetting,
   };
