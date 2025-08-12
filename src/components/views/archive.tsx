@@ -42,39 +42,10 @@ export default function Archive() {
   const {
     inProgressCount,
     completedCount,
-    streak,
-    totalStepsFinished,
-    thisWeekCompleted,
   } = useMemo(() => {
-    const completedGoals = data.goals.filter(g => g.status === 'completed');
-    
-    let currentStreak = 0;
-    if (completedGoals.length > 0) {
-        const sortedCompletions = completedGoals.map(g => new Date(g.completedAt!)).sort((a, b) => b.getTime() - a.getTime());
-        if (isSameDay(sortedCompletions[0], new Date()) || isSameDay(sortedCompletions[0], new Date(Date.now() - 86400000))) {
-            currentStreak = 1;
-            for (let i = 0; i < sortedCompletions.length - 1; i++) {
-                const diff = (sortedCompletions[i].getTime() - sortedCompletions[i+1].getTime()) / (1000 * 3600 * 24);
-                if (diff <= 1) {
-                    currentStreak++;
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-
-    const stepsFinished = data.goals.reduce((acc, goal) => acc + (goal.status === 'completed' ? goal.actionPlan.steps.length : goal.currentStepIndex), 0);
-    const today = new Date();
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-    const weekCompleted = completedGoals.filter(g => new Date(g.completedAt!) >= startOfWeek).length;
-
     return {
         inProgressCount: data.goals.filter(g => g.status === 'in-progress').length,
-        completedCount: completedGoals.length,
-        streak: currentStreak,
-        totalStepsFinished: stepsFinished,
-        thisWeekCompleted: weekCompleted,
+        completedCount: data.goals.filter(g => g.status === 'completed').length,
     }
   }, [data.goals]);
 
@@ -118,20 +89,6 @@ export default function Archive() {
             <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
             </TabsList>
         </Tabs>
-
-        <Card>
-            <CardHeader className="pb-2">
-                <CardTitle className="text-lg">My Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center gap-2"><Flame className="h-5 w-5 text-primary" /><p><strong>{streak}</strong> days streak</p></div>
-                    <div className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" /><p><strong>{completedCount}</strong> goals completed</p></div>
-                    <div className="flex items-center gap-2"><Zap className="h-5 w-5 text-primary" /><p><strong>{totalStepsFinished}</strong> steps finished</p></div>
-                    <div className="flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /><p><strong>{thisWeekCompleted}</strong> this week</p></div>
-                </div>
-            </CardContent>
-        </Card>
       </div>
 
 
