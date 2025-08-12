@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -18,14 +18,17 @@ import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Bell, Trash2, Sun, Moon, Clock } from 'lucide-react';
+import { ArrowLeft, Trash2, Sun, Moon, Clock, Bell } from 'lucide-react';
+import { TimePickerSheet } from '@/components/time-picker-sheet';
 
 export default function Settings() {
   const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting, exitSettings } = useAppContext();
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
 
   const coachForDisplay = currentCoach || (data.coachId ? coaches[data.coachId] : coachList[0]);
 
   return (
+    <>
     <div className="flex flex-1 flex-col bg-muted">
       <header className="p-4 border-b flex items-center justify-between gap-2 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitSettings}>
@@ -61,16 +64,18 @@ export default function Settings() {
               ))}
             </div>
           </div>
-
+          
           <div className="space-y-2 rounded-lg border p-3 bg-background">
              <div className="flex items-center justify-between">
                 <Label className="font-normal flex items-center gap-2 text-foreground">
                     <Bell className="h-4 w-4" /> Daily Reminder: {data.settings.reminderTime}
                 </Label>
-                <Button variant="link" className="text-xs h-auto p-0">Change</Button>
+                <Button variant="link" className="text-xs h-auto p-0" onClick={() => setIsTimePickerOpen(true)}>
+                  Change
+                </Button>
              </div>
           </div>
-
+          
           <div className="space-y-2 rounded-lg border p-3 bg-background">
             <div className="flex items-center justify-between">
               <Label htmlFor="show-timer" className="font-normal flex items-center gap-2 text-foreground">
@@ -114,5 +119,14 @@ export default function Settings() {
           </AlertDialog>
       </div>
     </div>
+    <TimePickerSheet 
+      open={isTimePickerOpen} 
+      onOpenChange={setIsTimePickerOpen} 
+      value={data.settings.reminderTime} 
+      onConfirm={(newTime) => {
+        updateSetting('reminderTime', newTime);
+      }}
+    />
+    </>
   );
 }
