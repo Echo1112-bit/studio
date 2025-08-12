@@ -70,14 +70,6 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }, 500);
   };
 
-  if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const value: AuthContextType = {
     user,
     loading,

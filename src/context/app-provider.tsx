@@ -75,9 +75,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!key) {
       if(user === null) { // User is logged out
         setData(defaultAppData);
+        setIsInitialized(false);
       }
       return;
     };
+
+    if (isInitialized) return;
 
     try {
       const storedData = localStorage.getItem(key);
@@ -97,7 +100,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setData({ ...defaultAppData, appStatus: 'coach_selection' });
     }
     setIsInitialized(true);
-  }, [user, getLocalStorageKey]);
+  }, [user, getLocalStorageKey, isInitialized]);
 
   useEffect(() => {
     const key = getLocalStorageKey();
