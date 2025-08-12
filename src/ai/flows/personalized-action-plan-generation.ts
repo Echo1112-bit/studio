@@ -25,14 +25,14 @@ const ActionPlanOutputSchema = z.object({
   steps: z.array(
     z.object({
       stepNumber: z.number().describe('The step number in the action plan.'),
-      emoji: z.string().describe('A single emoji that reflects the coach\'s personality for this specific step.'),
+      emoji: z.string().describe("A single emoji that reflects the coach's personality for this specific step."),
       actionTitle: z.string().describe('A clear, concise, and action-oriented instruction for the step, between 6-10 words. It should include a specific action verb and a clear completion standard. Example: "Open email app and type simple subject"'),
       coachGuidance: z.string().describe('Personalized, encouraging emotional support guidance from the coach for this step, between 12-20 words. This should reduce anxiety and reflect the coach\'s personality. Example: "Something like \'Project Update\' works perfectly - no need to craft the perfect headline!"'),
       timeEstimate: z.string().describe('An approachable, encouraging time estimate (e.g., \'Just 2-3 min\', \'Quick 5-8 min\', \'About 15-20 min\'). The first step should be max 5 minutes.'),
     })
   ).describe('A list of action steps with guidance and time estimates.'),
   totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased encouragingly (e.g., "Around 30 minutes").'),
-  coachComment: z.string().describe('An introductory comment from the coach regarding the generated plan, between 20-30 words.'),
+  coachComment: z.string().describe('An introductory comment from the coach regarding the generated plan, between 15-25 words.'),
 });
 export type ActionPlanOutput = z.infer<typeof ActionPlanOutputSchema>;
 
@@ -51,7 +51,7 @@ You will generate an action plan consisting of 3-10 micro-tasks. Each task has t
 2.  **actionTitle**: A concise action instruction (6-10 words).
 3.  **coachGuidance**: Emotional support and encouragement (12-20 words).
 
-The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 20-30 words.
+The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 15-25 words.
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
