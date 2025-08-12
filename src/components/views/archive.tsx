@@ -80,13 +80,21 @@ export default function Archive() {
 
   if (data.goals.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center p-6 text-center bg-muted">
-        <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">No Goals Yet!</h2>
-        <p className="text-muted-foreground mb-6">Your goal history will appear here once you start one.</p>
-        <Button onClick={exitArchive}>
-          <Plus className="mr-2 h-4 w-4" /> Create First Goal
-        </Button>
+      <div className="flex flex-1 flex-col bg-muted">
+        <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
+            <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal Archive 📚</h1>
+        </header>
+        <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+            <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">No Goals Yet!</h2>
+            <p className="text-muted-foreground mb-6">Your goal history will appear here once you start one.</p>
+            <Button onClick={exitArchive}>
+              <Plus className="mr-2 h-4 w-4" /> Create First Goal
+            </Button>
+        </div>
       </div>
     );
   }
