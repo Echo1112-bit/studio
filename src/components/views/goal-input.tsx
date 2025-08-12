@@ -15,17 +15,23 @@ export default function GoalInput() {
   const [goalText, setGoalText] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const displayCoach = coach || coaches[data.coachId || 'luna'];
+  const displayCoach = coach || (data.coachId ? coaches[data.coachId] : null);
 
   const handleGenerate = () => {
     if (goalText.trim()) {
       setGoal(goalText.trim());
     }
   };
+  
+  if (!displayCoach) {
+    // This can happen briefly if navigating back from another screen before context updates.
+    // Or if there's no coachId set. A loading or default state could go here.
+    return null; 
+  }
 
   return (
     <>
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-4 pt-8">
         <header className="flex items-center justify-between mb-4">
             <Button variant="ghost" size="icon" onClick={viewPersonalCenter}>
               <User className="h-6 w-6" />
@@ -40,7 +46,7 @@ export default function GoalInput() {
           </div>
         </header>
 
-        <main className="flex flex-1 flex-col">
+        <main className="flex-1 flex-col">
             <div className="text-center mb-4">
                 <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{displayCoach.emoji}</div>
                 <p className="font-bold text-2xl">
