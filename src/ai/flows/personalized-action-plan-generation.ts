@@ -31,7 +31,7 @@ const ActionPlanOutputSchema = z.object({
       timeEstimate: z.string().describe('An approachable, encouraging time estimate (e.g., \'Just 2-3 min\', \'Quick 5-8 min\', \'About 15-20 min\'). The first step should be max 5 minutes.'),
     })
   ).describe('A list of action steps with guidance and time estimates.'),
-  totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased encouragingly (e.g., "Around 30 minutes").'),
+  totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased as "Takes about X minutes of focused work" (e.g., "Takes about 45 minutes of focused work").'),
   coachComment: z.string().describe('A very concise introductory comment from the coach regarding the generated plan, between 10-20 words.'),
 });
 export type ActionPlanOutput = z.infer<typeof ActionPlanOutputSchema>;
