@@ -44,8 +44,8 @@ const StatCard = ({
         <CardContent>
             <div className="flex items-baseline justify-between">
                 <p className="text-3xl font-bold">{value}</p>
-                {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
             </div>
+             {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
             {progress !== undefined && (
                 <div className="mt-2">
                     <div className="flex items-center gap-2">
@@ -150,13 +150,13 @@ export default function PersonalCenter() {
             </div>
             <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
                <CollapsibleTrigger asChild>
-                   <Button variant="ghost" className="w-full text-xs text-muted-foreground">
-                       Quick Stats
-                       {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />}
+                   <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground">
+                        📊 Quick Stats
+                       {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
                    </Button>
                </CollapsibleTrigger>
                <CollapsibleContent>
-                   <p className="text-center text-xs text-muted-foreground p-2 bg-secondary rounded-md">
+                   <p className="text-left text-xs text-muted-foreground p-2 bg-secondary rounded-md">
                        Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
                    </p>
                </CollapsibleContent>
