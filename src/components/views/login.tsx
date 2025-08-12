@@ -2,7 +2,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-provider';
 
 const GoogleIcon = () => (
@@ -33,13 +33,18 @@ export default function Login() {
         <CardContent className="space-y-4">
           <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
             <GoogleIcon />
-            Sign in with Google
+            Continue with Google
           </Button>
           <Button variant="outline" className="w-full" onClick={signInWithApple}>
             <AppleIcon />
-            Sign in with Apple
+            Continue with Apple
           </Button>
         </CardContent>
+        <CardFooter>
+            <p className="text-xs text-muted-foreground text-center px-4">
+              By continuing, you agree to our Terms of Service and Privacy policy
+            </p>
+        </CardFooter>
       </Card>
     </div>
   );
