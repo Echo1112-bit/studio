@@ -56,7 +56,7 @@ export default function Archive() {
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal 🎯</h1>
+          <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">My Goal 🎯</h1>
         </header>
         <div className="flex flex-1 flex-col items-center justify-center p-6 text-center pb-24">
             <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
@@ -78,7 +78,7 @@ export default function Archive() {
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal 🎯</h1>
+        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">My Goal 🎯</h1>
       </header>
       
       <div className="p-4 space-y-4">
