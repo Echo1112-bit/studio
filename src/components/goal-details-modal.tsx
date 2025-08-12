@@ -103,7 +103,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
                     <p className="font-semibold">
                         {isCompleted 
                             ? `${goal.actionPlan.steps.length}/${goal.actionPlan.steps.length}`
-                            : format(new Date(goal.createdAt), 'MMM d, yyyy')
+                            : format(new Date(goal.createdAt), 'HH:mm - MMM d, yyyy')
                         }
                     </p>
                 </div>
