@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 export default function ActionPlan() {
   const { activeGoal, coach, startPlan, backToGoalInput } = useAppContext();
@@ -20,29 +20,32 @@ export default function ActionPlan() {
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <div className="flex items-start gap-3 rounded-lg bg-secondary p-3">
-            <span className="text-2xl mt-1">{coach.emoji}</span>
-            <div>
-              <p className="font-semibold text-sm">{coach.name} says:</p>
-              <p className="text-sm text-muted-foreground italic line-clamp-3">"{activeGoal.actionPlan.coachComment}"</p>
+          <div className="space-y-2 rounded-lg bg-secondary p-3 h-auto max-h-[120px]">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl mt-1">{coach.emoji}</span>
+                <div>
+                  <p className="font-semibold text-sm">{coach.name} says:</p>
+                  <p className="text-sm text-muted-foreground italic line-clamp-2">"{activeGoal.actionPlan.coachComment}"</p>
+                </div>
             </div>
+             <p className="text-sm font-semibold flex items-center gap-2 pt-2">
+                <Clock className="h-4 w-4" /> {activeGoal.actionPlan.totalTimeEstimate}
+            </p>
           </div>
-
-          <p className="text-center font-bold">
-            {activeGoal.actionPlan.totalTimeEstimate}
-          </p>
           
           <div className="space-y-2">
             {activeGoal.actionPlan.steps.map((step) => (
               <Card key={step.stepNumber} className="bg-background/70">
                 <CardContent className="p-3">
-                   <div className="flex items-start gap-3">
-                     <span className="text-lg font-bold text-primary mt-0.5">{step.emoji}</span>
-                     <div className="flex-1">
-                      <p className="font-semibold">{step.stepNumber}. {step.actionTitle}</p>
-                      <p className="text-xs text-muted-foreground italic mt-1">"{step.coachGuidance}"</p>
+                   <div className="flex flex-col">
+                     <div className="flex items-start gap-3">
+                       <span className="text-lg font-bold text-primary mt-0.5">{step.emoji}</span>
+                       <div className="flex-1">
+                        <p className="font-semibold text-base">{step.stepNumber}. {step.actionTitle}</p>
+                        <p className="text-xs text-muted-foreground italic mt-1">"{step.coachGuidance}"</p>
+                       </div>
                      </div>
-                     <p className="text-xs font-semibold text-primary/80 whitespace-nowrap">{step.timeEstimate}</p>
+                     <p className="text-xs font-semibold text-primary/80 whitespace-nowrap self-end mt-2">{step.timeEstimate}</p>
                    </div>
                 </CardContent>
               </Card>
