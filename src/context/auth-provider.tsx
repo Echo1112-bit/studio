@@ -43,6 +43,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
     try {
       await signInWithPopup(auth, provider);
     } catch (error) {
@@ -52,6 +53,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const signInWithApple = async () => {
     const provider = new OAuthProvider('apple.com');
+    provider.setCustomParameters({ locale: 'en' });
     try {
       await signInWithPopup(auth, provider);
     } catch (error) {
