@@ -11,12 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { coaches } from '@/lib/coaches';
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // This logic ensures the currently selected coach is always shown.
-  const displayCoach = coaches[data.coachId || 'luna'];
+  const displayCoach = coach || coaches[data.coachId || 'luna'];
 
   const handleGenerate = () => {
     if (goalText.trim()) {
@@ -41,7 +40,7 @@ export default function GoalInput() {
           </div>
         </header>
 
-        <main className="flex flex-1 flex-col justify-center">
+        <main className="flex flex-1 flex-col">
             <div className="text-center mb-4">
                 <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{displayCoach.emoji}</div>
                 <p className="font-bold text-2xl">
