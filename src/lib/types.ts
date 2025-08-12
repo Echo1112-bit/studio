@@ -53,6 +53,7 @@ export interface Goal {
     currentStepIndex: number;
     totalTimeSpent: number;
     stepHistory: StepHistory[];
+    completedSteps: number[];
 }
 
 export type AppStatus =
