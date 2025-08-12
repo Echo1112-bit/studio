@@ -108,17 +108,7 @@ export default function PersonalCenter() {
             </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><Star className="h-5 w-5"/> This Week's Wins</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <p className="text-sm text-muted-foreground">No data for this week yet. Go complete a goal!</p>
-            </CardContent>
-        </Card>
-
       </div>
     </div>
   );
 }
-
