@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -22,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
@@ -76,6 +78,44 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               ))}
             </div>
           </div>
+
+          <div className="space-y-4 rounded-lg border p-3">
+             <h3 className="font-semibold flex items-center gap-2"><Bell className="h-4 w-4" /> Daily Reminders</h3>
+             <div>
+                <Label className="font-normal text-muted-foreground">How much support do you need?</Label>
+                <RadioGroup 
+                    value={data.settings.reminderLevel} 
+                    onValueChange={(value) => updateSetting('reminderLevel', value as 'light' | 'standard')}
+                    className="mt-2"
+                >
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="light" id="light" />
+                        <Label htmlFor="light" className="font-normal">Light (Once daily)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="standard" id="standard" />
+                        <Label htmlFor="standard" className="font-normal">Standard (2-3 times)</Label>
+                    </div>
+                </RadioGroup>
+             </div>
+             <div className="flex items-center justify-between">
+                <Label className="font-normal flex items-center gap-2 text-muted-foreground">
+                    <Clock className="h-4 w-4" /> Morning time: {data.settings.reminderTime}
+                </Label>
+                <Button variant="link" disabled className="text-xs h-auto p-0">Change</Button>
+             </div>
+             <div className="flex items-center justify-between">
+                <Label htmlFor="pause-reminders" className="font-normal flex items-center gap-2 text-muted-foreground">
+                    Pause when I'm working
+                </Label>
+                <Switch
+                    id="pause-reminders"
+                    checked={data.settings.pauseRemindersWhileWorking}
+                    onCheckedChange={(checked) => updateSetting('pauseRemindersWhileWorking', checked)}
+                />
+             </div>
+          </div>
+
           <div className="flex items-center justify-between rounded-lg border p-3">
             <Label htmlFor="dark-mode" className="font-semibold flex items-center gap-2">
               Dark Mode

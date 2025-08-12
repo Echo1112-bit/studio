@@ -13,6 +13,9 @@ const LOCAL_STORAGE_KEY = 'pro-coach-ai-data-v3';
 
 const defaultSettings: AppSettings = {
     showTimer: true,
+    reminderLevel: 'standard',
+    pauseRemindersWhileWorking: true,
+    reminderTime: '9:00 AM',
 };
 
 const defaultAppData: AppData = {
@@ -88,7 +91,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [data, isInitialized]);
   
   const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
-  const coach = activeGoal ? coaches[activeGoal.coachId] : (data.coachId ? coaches[data.coachId] : undefined);
+  const coach = data.coachId ? coaches[data.coachId] : (activeGoal ? coaches[activeGoal.coachId] : undefined);
+
 
   useEffect(() => {
     const root = document.documentElement;
@@ -253,7 +257,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
   
   const backToGoalInput = useCallback(() => {
-    updateData({ appStatus: 'goal_input' });
+    // When navigating back, ensure the coachId from settings is used if no active goal
+    updateData({ appStatus: 'goal_input', activeGoalId: undefined });
   }, [updateData]);
 
   const toggleDarkMode = useCallback(() => {
@@ -272,7 +277,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
 
   const exitArchive = useCallback(() => {
-    updateData({ appStatus: 'goal_input' });
+    updateData({ appStatus: 'goal_input', activeGoalId: undefined });
   }, [updateData]);
 
   const viewPersonalCenter = useCallback(() => {
