@@ -46,7 +46,7 @@ export default function Home() {
                 <CardContent className="p-8 text-center">
                     <div className="text-6xl mb-4">{coach?.emoji}</div>
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                    <p className="font-semibold text-lg mt-4">Your coach is building the perfect plan...</p>
+                    <p className="font-semibold text-lg mt-4">{coach?.name} is building the perfect plan...</p>
                     <p className="text-muted-foreground mt-1">This should only take a moment.</p>
                 </CardContent>
             </Card>
