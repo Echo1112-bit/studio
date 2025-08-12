@@ -36,16 +36,16 @@ const StatCard = ({
     progressText?: string;
 }) => (
     <Card>
-        <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2 text-muted-foreground">
+        <CardHeader className="p-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
                 {icon} {title}
             </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 pt-0">
             <div className="flex items-baseline justify-between">
-                <p className="text-3xl font-bold">{value}</p>
+                <p className="text-2xl font-bold">{value}</p>
             </div>
-             {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+             {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
             {progress !== undefined && (
                 <div className="mt-2">
                     <div className="flex items-center gap-2">
