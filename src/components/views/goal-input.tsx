@@ -55,15 +55,15 @@ export default function GoalInput() {
     <>
       <div className="flex flex-1 flex-col p-4">
         <header className="flex items-center justify-between mb-4">
-            <Button variant="ghost" size="icon" onClick={viewPersonalCenter}>
-              <User className="h-6 w-6" />
+            <Button variant="ghost" size="icon" onClick={viewSettings}>
+              <Settings className="h-6 w-6" />
             </Button>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={viewArchive}>
               <BookOpen className="h-6 w-6" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={viewSettings}>
-              <Settings className="h-6 w-6" />
+            <Button variant="ghost" size="icon" onClick={viewPersonalCenter}>
+              <User className="h-6 w-6" />
             </Button>
           </div>
         </header>
