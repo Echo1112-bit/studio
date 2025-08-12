@@ -114,8 +114,8 @@ export default function PersonalCenter() {
                 <CardTitle className="text-lg flex items-center gap-2"><Zap className="h-5 w-5"/> Quick Start</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
-                <Button onClick={setNewGoal}>Set New Goal</Button>
                 <Button onClick={viewArchive} variant="secondary">View All Goals</Button>
+                <Button onClick={setNewGoal}>Set New Goal</Button>
             </CardContent>
         </Card>
 
