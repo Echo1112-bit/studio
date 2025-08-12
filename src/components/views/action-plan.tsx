@@ -27,11 +27,11 @@ export default function ActionPlan() {
   return (
     <>
       <div className="flex flex-1 flex-col">
-        <header className="p-2 border-b flex items-center justify-between h-[44px] bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+        <header className="p-4 border-b flex items-center justify-between gap-2 bg-background sticky top-0 z-10">
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsLeaveAlertOpen(true)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold">Your Action Plan</h1>
+          <h1 className="text-xl font-bold text-center">Your Action Plan</h1>
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={viewSettings}>
               <Settings className="h-5 w-5" />
           </Button>
@@ -44,7 +44,7 @@ export default function ActionPlan() {
                   <span className="text-2xl mt-1">{coach.emoji}</span>
                   <div>
                     <p className="font-semibold text-sm">{coach.name} says:</p>
-                    <p className="text-sm text-muted-foreground italic line-clamp-2">"{activeGoal.actionPlan.coachComment}"</p>
+                    <p className="text-sm text-muted-foreground italic line-clamp-3">"{activeGoal.actionPlan.coachComment}"</p>
                   </div>
               </div>
                <p className="text-sm font-semibold flex items-center gap-2 pt-2">

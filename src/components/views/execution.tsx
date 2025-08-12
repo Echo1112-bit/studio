@@ -47,11 +47,11 @@ export default function Execution() {
   return (
     <>
     <div className="flex flex-1 flex-col bg-muted">
-       <header className="p-2 border-b flex items-center justify-between h-[44px] bg-background/80 backdrop-blur-sm">
+       <header className="p-4 border-b flex items-center justify-between gap-2 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsLeaveAlertOpen(true)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-bold text-sm">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</h1>
+        <h1 className="font-bold text-sm text-center">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</h1>
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={viewSettings}>
             <Settings className="h-5 w-5" />
         </Button>
