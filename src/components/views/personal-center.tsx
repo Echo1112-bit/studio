@@ -36,16 +36,14 @@ const StatCard = ({
     progressText?: string;
 }) => (
     <Card>
-        <CardHeader className="p-3">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
-                {icon} {title}
+        <CardHeader className="p-3 pb-1">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-muted-foreground truncate">
+                {icon} <span className="truncate">{title}</span>
             </CardTitle>
         </CardHeader>
         <CardContent className="p-3 pt-0">
-            <div className="flex items-baseline justify-between">
-                <p className="text-2xl font-bold">{value}</p>
-            </div>
-             {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
+            <p className="text-2xl font-bold">{value}</p>
+             {subtitle && <p className="text-xs text-muted-foreground mt-1 truncate">{subtitle}</p>}
             {progress !== undefined && (
                 <div className="mt-2">
                     <div className="flex items-center gap-2">
@@ -122,7 +120,7 @@ export default function PersonalCenter() {
         
         <div className="space-y-4">
             <h2 className="text-lg font-bold">🔥 Your Progress</h2>
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
                 <StatCard 
                     icon={<Flame size={16} />}
                     title="Current Streak"
@@ -132,7 +130,7 @@ export default function PersonalCenter() {
                  <StatCard 
                     icon={<Zap size={16} />}
                     title="Focus Time"
-                    value={`${formatTime(stats.todayFocusTime)} today`}
+                    value={`${formatTime(stats.todayFocusTime)}`}
                     subtitle={`Total: ${formatTime(stats.totalFocusTime)}`}
                 />
                  <StatCard 
@@ -150,7 +148,7 @@ export default function PersonalCenter() {
             </div>
             <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
                <CollapsibleTrigger asChild>
-                   <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground">
+                   <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground px-1">
                         📊 Quick Stats
                        {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
                    </Button>
@@ -181,8 +179,8 @@ export default function PersonalCenter() {
         </Card>
         
         <div className="grid grid-cols-2 gap-3">
-            <Button onClick={viewArchive} variant="outline">View All Goals</Button>
-            <Button onClick={setNewGoal}>Set New Goal</Button>
+            <Button onClick={setNewGoal} variant="outline">Set New Goal</Button>
+            <Button onClick={viewArchive}>View All Goals</Button>
         </div>
 
       </div>
