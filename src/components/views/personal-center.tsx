@@ -42,14 +42,12 @@ const StatCard = ({
             </CardTitle>
         </CardHeader>
         <CardContent className="p-3 pt-0">
-            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xl font-bold truncate">{value}</p>
              {subtitle && <p className="text-xs text-muted-foreground mt-1 truncate">{subtitle}</p>}
             {progress !== undefined && (
-                <div className="mt-2">
-                    <div className="flex items-center gap-2">
-                        <Progress value={progress} className="h-2 flex-1" />
-                        <span className="text-xs font-semibold">{Math.round(progress)}%</span>
-                    </div>
+                <div className="mt-2 space-y-1">
+                    <Progress value={progress} className="h-2" />
+                    {progressText && <p className="text-xs text-muted-foreground">{progressText}</p>}
                 </div>
             )}
         </CardContent>
@@ -118,9 +116,12 @@ export default function PersonalCenter() {
             </CardContent>
         </Card>
         
-        <div className="space-y-4">
+        <div className="space-y-2">
             <h2 className="text-lg font-bold">🔥 Your Progress</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <p className="text-sm text-muted-foreground -mt-1">
+                Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
+            </p>
+            <div className="grid grid-cols-2 gap-3 pt-2">
                 <StatCard 
                     icon={<Flame size={16} />}
                     title="Current Streak"
@@ -130,7 +131,7 @@ export default function PersonalCenter() {
                  <StatCard 
                     icon={<Zap size={16} />}
                     title="Focus Time"
-                    value={`${formatTime(stats.todayFocusTime)}`}
+                    value={`${formatTime(stats.todayFocusTime)} today`}
                     subtitle={`Total: ${formatTime(stats.totalFocusTime)}`}
                 />
                  <StatCard 
@@ -144,21 +145,9 @@ export default function PersonalCenter() {
                     title="Steps Completed"
                     value={`${stats.totalStepsCompletedForInProgressGoals}/${stats.totalStepsForInProgressGoals}`}
                     progress={stepsCompletedProgress}
+                    subtitle="In Progress Goals"
                 />
             </div>
-            <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
-               <CollapsibleTrigger asChild>
-                   <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground px-1">
-                        📊 Quick Stats
-                       {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
-                   </Button>
-               </CollapsibleTrigger>
-               <CollapsibleContent>
-                   <p className="text-left text-xs text-muted-foreground p-2 bg-secondary rounded-md">
-                       Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
-                   </p>
-               </CollapsibleContent>
-           </Collapsible>
         </div>
         
         <Card>
@@ -179,11 +168,12 @@ export default function PersonalCenter() {
         </Card>
         
         <div className="grid grid-cols-2 gap-3">
-            <Button onClick={setNewGoal} variant="outline">Set New Goal</Button>
             <Button onClick={viewArchive}>View All Goals</Button>
+            <Button onClick={setNewGoal} variant="outline">Set New Goal</Button>
         </div>
 
       </div>
     </div>
   );
 }
+
