@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -35,7 +36,6 @@ export default function GoalInput() {
               <p className="font-bold text-xl">
                 {displayCoach.name}
               </p>
-              <p className="text-muted-foreground text-sm">{displayCoach.title}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -49,6 +49,7 @@ export default function GoalInput() {
         </header>
 
         <main className="flex flex-1 flex-col justify-center">
+            <p className="text-muted-foreground text-center text-sm mb-2">{displayCoach.title}</p>
             <Card className="w-full">
                 <CardHeader>
                     <CardTitle className="text-xl">What are you procrastinating on?</CardTitle>
