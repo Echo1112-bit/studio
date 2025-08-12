@@ -30,13 +30,21 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(false);
     });
 
-    getRedirectResult(auth).catch(error => {
-      handleSignInError(error);
-      setLoading(false);
-    });
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // This will not be null if a redirect just happened.
+          setUser(result.user);
+        }
+      })
+      .catch(error => {
+        handleSignInError(error);
+      }).finally(() => {
+        setLoading(false);
+      });
 
     return () => unsubscribe();
-  }, [toast]);
+  }, []);
 
   const handleSignInError = (error: any) => {
     console.error("Sign-in error", error);
@@ -74,6 +82,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
+      setUser(null);
     } catch (error) {
       console.error("Sign-out error", error);
       toast({

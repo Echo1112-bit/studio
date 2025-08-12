@@ -18,8 +18,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { appStatus, coach } = useAppContext();
+
+  if (authLoading) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!user) {
     return <Login />;
