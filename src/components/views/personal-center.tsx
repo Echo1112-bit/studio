@@ -20,37 +20,43 @@ const achievementLevels = [
     { name: 'Procrastination Slayer', level: 5, minGoals: 200 },
 ];
 
-const StatCard = ({ icon, title, value, subtitle, progress, progressText }: {
+const StatCard = ({
+    icon,
+    title,
+    value,
+    subtitle,
+    progress,
+    progressText
+}: {
     icon: React.ReactNode;
     title: string;
     value: string;
-    subtitle: string;
+    subtitle?: string;
     progress?: number;
     progressText?: string;
 }) => (
-    <Card className="flex flex-col">
-        <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1">
+    <Card>
+        <CardHeader>
+            <CardTitle className="text-base font-semibold flex items-center gap-2 text-muted-foreground">
                 {icon} {title}
-            </CardDescription>
-            <CardTitle className="text-2xl">{value}</CardTitle>
+            </CardTitle>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col justify-end">
-            {progress !== undefined ? (
-                <div>
-                    <div className="flex justify-between items-center mb-1">
-                        <Progress value={progress} className="h-2 flex-1"/>
-                        <span className="text-xs font-semibold ml-2">{Math.round(progress)}%</span>
+        <CardContent>
+            <div className="flex items-baseline justify-between">
+                <p className="text-3xl font-bold">{value}</p>
+                {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+            </div>
+            {progress !== undefined && (
+                <div className="mt-2">
+                    <div className="flex items-center gap-2">
+                        <Progress value={progress} className="h-2 flex-1" />
+                        <span className="text-xs font-semibold">{Math.round(progress)}%</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{subtitle}</p>
                 </div>
-            ) : (
-                <p className="text-sm text-muted-foreground">{subtitle}</p>
             )}
         </CardContent>
     </Card>
 );
-
 
 export default function PersonalCenter() {
   const { data, exitPersonalCenter, viewArchive, setNewGoal, coach, stats } = useAppContext();
@@ -114,56 +120,49 @@ export default function PersonalCenter() {
             </CardContent>
         </Card>
         
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><UserIcon className="h-5 w-5"/> Your Progress</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-               <div className="grid grid-cols-2 gap-3">
-                    <StatCard 
-                        icon={<Flame size={16} />}
-                        title="Current Streak"
-                        value={`${stats.streak} days`}
-                        subtitle={`Best: ${stats.bestStreak} days`}
-                    />
-                     <StatCard 
-                        icon={<Zap size={16} />}
-                        title="Focus Time"
-                        value={formatTime(stats.todayFocusTime)}
-                        subtitle={`Total: ${formatTime(stats.totalFocusTime)}`}
-                    />
-                     <StatCard 
-                        icon={<Target size={16} />}
-                        title="Goals Completed"
-                        value={`${stats.todayCompletedCount}/${dailyGoalTarget}`}
-                        subtitle="Today's Goal"
-                        progress={goalsCompletedProgress}
-                    />
-                     <StatCard 
-                        icon={<CheckSquare size={16} />}
-                        title="Steps Completed"
-                        value={`${stats.totalStepsCompletedForInProgressGoals}/${stats.totalStepsForInProgressGoals}`}
-                        subtitle="In Progress Goals"
-                        progress={stepsCompletedProgress}
-                    />
-               </div>
-               <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
-                   <CollapsibleTrigger asChild>
-                       <Button variant="ghost" className="w-full text-xs text-muted-foreground">
-                           Quick Stats
-                           {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />}
-                       </Button>
-                   </CollapsibleTrigger>
-                   <CollapsibleContent>
-                       <p className="text-center text-xs text-muted-foreground p-2 bg-secondary rounded-md">
-                           Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
-                       </p>
-                   </CollapsibleContent>
-               </Collapsible>
-
-            </CardContent>
-        </Card>
-
+        <div className="space-y-4">
+            <h2 className="text-lg font-bold">🔥 Your Progress</h2>
+            <div className="space-y-3">
+                <StatCard 
+                    icon={<Flame size={16} />}
+                    title="Current Streak"
+                    value={`${stats.streak} days`}
+                    subtitle={`Best: ${stats.bestStreak} days`}
+                />
+                 <StatCard 
+                    icon={<Zap size={16} />}
+                    title="Focus Time"
+                    value={`${formatTime(stats.todayFocusTime)} today`}
+                    subtitle={`Total: ${formatTime(stats.totalFocusTime)}`}
+                />
+                 <StatCard 
+                    icon={<Target size={16} />}
+                    title="Goals Completed"
+                    value={`${stats.todayCompletedCount}/${dailyGoalTarget}`}
+                    progress={goalsCompletedProgress}
+                />
+                 <StatCard 
+                    icon={<CheckSquare size={16} />}
+                    title="Steps Completed"
+                    value={`${stats.totalStepsCompletedForInProgressGoals}/${stats.totalStepsForInProgressGoals}`}
+                    progress={stepsCompletedProgress}
+                />
+            </div>
+            <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
+               <CollapsibleTrigger asChild>
+                   <Button variant="ghost" className="w-full text-xs text-muted-foreground">
+                       Quick Stats
+                       {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />}
+                   </Button>
+               </CollapsibleTrigger>
+               <CollapsibleContent>
+                   <p className="text-center text-xs text-muted-foreground p-2 bg-secondary rounded-md">
+                       Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
+                   </p>
+               </CollapsibleContent>
+           </Collapsible>
+        </div>
+        
         <Card>
             <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2"><Trophy className="h-5 w-5"/> Achievement Level</CardTitle>
