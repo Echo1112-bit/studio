@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import type { Goal } from '@/lib/types';
 import { coaches } from '@/lib/coaches';
 import { format } from 'date-fns';
-import { Clock, Calendar, CheckCircle2, Circle, MoreHorizontal, Trash2, Check, ExternalLink } from 'lucide-react';
+import { Clock, Calendar, CheckCircle2, Circle, MoreHorizontal, Trash2, Check, ExternalLink, CheckSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { cn } from '@/lib/utils';
 import {
@@ -96,11 +96,16 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-4 text-sm px-6 pb-4">
-            <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+             <div className="flex items-center gap-2">
+                {isCompleted ? <CheckSquare className="h-4 w-4 text-muted-foreground" /> : <Calendar className="h-4 w-4 text-muted-foreground" />}
                 <div>
-                    <p className="text-muted-foreground">Started</p>
-                    <p className="font-semibold">{format(new Date(goal.createdAt), 'MMM d, yyyy')}</p>
+                    <p className="text-muted-foreground">{isCompleted ? 'Steps' : 'Started'}</p>
+                    <p className="font-semibold">
+                        {isCompleted 
+                            ? `${goal.actionPlan.steps.length}/${goal.actionPlan.steps.length}`
+                            : format(new Date(goal.createdAt), 'MMM d, yyyy')
+                        }
+                    </p>
                 </div>
             </div>
             <div className="flex items-center gap-2">
@@ -130,7 +135,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
                                     "flex items-start gap-3 p-3 rounded-lg transition-all duration-200",
                                     !isCompleted && "cursor-pointer hover:bg-secondary"
                                 )}
-                                onClick={() => toggleStepCompletion(goal.id, step.stepNumber)}
+                                onClick={() => !isCompleted && toggleStepCompletion(goal.id, step.stepNumber)}
                             >
                                 <div>
                                     {isStepCompleted ? (
