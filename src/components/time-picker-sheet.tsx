@@ -91,7 +91,7 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
     scrollRef: React.RefObject<HTMLDivElement>
   }) => (
     <ScrollArea ref={scrollRef} className="h-48 flex-1">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center">
             {values.map(val => (
                 <button
                     key={val}
@@ -100,9 +100,9 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
                     data-minute={type === 'minute' ? val : undefined}
                     onClick={() => onSelect(val)}
                     className={cn(
-                        "w-full text-center py-2 text-2xl font-mono",
+                        "w-full text-center py-2 text-2xl font-mono transition-all duration-150",
                         selectedValue === val
-                            ? "font-bold text-primary"
+                            ? "font-bold text-primary scale-110"
                             : "text-muted-foreground/50"
                     )}
                 >
@@ -130,7 +130,7 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
                 <TimeColumn values={minutes} selectedValue={selectedMinute} onSelect={setSelectedMinute} type="minute" scrollRef={minuteRef} />
             </div>
         </div>
-        <SheetFooter className="grid grid-cols-2 gap-3">
+        <SheetFooter className="grid grid-cols-2 gap-3 pt-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button onClick={handleConfirm}>Confirm</Button>
         </SheetFooter>
