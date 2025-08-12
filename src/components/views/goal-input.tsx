@@ -11,12 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { coaches } from '@/lib/coaches';
 
 export default function GoalInput() {
-  const { data, coach, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // This component can be rendered without a coach if we come from the archive page
-  const displayCoach = coach || coaches[data.coachId || 'luna'];
+  // This logic ensures the currently selected coach is always shown.
+  const displayCoach = coaches[data.coachId || 'luna'];
 
   const handleGenerate = () => {
     if (goalText.trim()) {
