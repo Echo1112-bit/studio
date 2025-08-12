@@ -81,4 +81,5 @@ export interface AppData {
   goals: Goal[];
   darkMode: boolean;
   settings: AppSettings;
+  bestStreak: number;
 }

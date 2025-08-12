@@ -1,13 +1,16 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useAppContext } from '@/context/app-provider';
 import { coaches } from '@/lib/coaches';
-import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star, Trophy } from 'lucide-react';
+import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star, Trophy, ChevronDown, ChevronUp } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
+
 
 const achievementLevels = [
     { name: 'Productivity Rookie', level: 1, minGoals: 0 },
@@ -17,15 +20,47 @@ const achievementLevels = [
     { name: 'Procrastination Slayer', level: 5, minGoals: 200 },
 ];
 
+const StatCard = ({ icon, title, value, subtitle, progress, progressText }: {
+    icon: React.ReactNode;
+    title: string;
+    value: string;
+    subtitle: string;
+    progress?: number;
+    progressText?: string;
+}) => (
+    <Card className="flex flex-col">
+        <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1">
+                {icon} {title}
+            </CardDescription>
+            <CardTitle className="text-2xl">{value}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow flex flex-col justify-end">
+            {progress !== undefined ? (
+                <div>
+                    <div className="flex justify-between items-center mb-1">
+                        <Progress value={progress} className="h-2 flex-1"/>
+                        <span className="text-xs font-semibold ml-2">{Math.round(progress)}%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{subtitle}</p>
+                </div>
+            ) : (
+                <p className="text-sm text-muted-foreground">{subtitle}</p>
+            )}
+        </CardContent>
+    </Card>
+);
+
+
 export default function PersonalCenter() {
   const { data, exitPersonalCenter, viewArchive, setNewGoal, coach, stats } = useAppContext();
+  const [isQuickStatsOpen, setIsQuickStatsOpen] = useState(false);
 
   const currentCoach = coach || coaches[data.coachId || 'luna'];
 
   const {
       level,
       nextLevel,
-      goalsToNextLevel,
       levelProgress,
   } = useMemo(() => {
     const completedCount = stats.completedCount;
@@ -33,11 +68,9 @@ export default function PersonalCenter() {
     const level = achievementLevels[achievementLevels.length - 1 - currentLevelIndex];
     const nextLevel = achievementLevels[achievementLevels.length - currentLevelIndex];
     
-    let goalsToNext = 0;
     let progress = 100;
 
     if (nextLevel) {
-        goalsToNext = nextLevel.minGoals - completedCount;
         const goalsForThisLevel = completedCount - level.minGoals;
         const totalGoalsForLevel = nextLevel.minGoals - level.minGoals;
         progress = (goalsForThisLevel / totalGoalsForLevel) * 100;
@@ -46,17 +79,20 @@ export default function PersonalCenter() {
     return {
         level,
         nextLevel,
-        goalsToNextLevel: goalsToNext,
         levelProgress: progress
     };
   }, [stats.completedCount]);
   
-  const totalFocusTime = useMemo(() => {
-    const hours = Math.floor(stats.totalFocusTime / 3600);
-    const minutes = Math.floor((stats.totalFocusTime % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  }, [stats.totalFocusTime]);
+  const formatTime = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+  };
 
+  const dailyGoalTarget = 3;
+  const goalsCompletedProgress = Math.min((stats.todayCompletedCount / dailyGoalTarget) * 100, 100);
+  const stepsCompletedProgress = stats.totalStepsForInProgressGoals > 0 ? (stats.totalStepsCompletedForInProgressGoals / stats.totalStepsForInProgressGoals) * 100 : 0;
 
   return (
     <div className="flex flex-1 flex-col bg-muted">
@@ -83,12 +119,48 @@ export default function PersonalCenter() {
                 <CardTitle className="text-lg flex items-center gap-2"><UserIcon className="h-5 w-5"/> Your Progress</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center gap-2"><Flame className="h-5 w-5 text-primary" /><p><strong>{stats.streak}</strong> days streak</p></div>
-                    <div className="flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /><p><strong>{stats.thisWeekCompleted}</strong> this week</p></div>
-                    <div className="flex items-center gap-2"><Clock className="h-5 w-5 text-primary" /><p><strong>{totalFocusTime}</strong> focus</p></div>
-                    <div className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" /><p><strong>{stats.completedCount}</strong> goals done</p></div>
-                </div>
+               <div className="grid grid-cols-2 gap-3">
+                    <StatCard 
+                        icon={<Flame size={16} />}
+                        title="Current Streak"
+                        value={`${stats.streak} days`}
+                        subtitle={`Best: ${stats.bestStreak} days`}
+                    />
+                     <StatCard 
+                        icon={<Zap size={16} />}
+                        title="Focus Time"
+                        value={formatTime(stats.todayFocusTime)}
+                        subtitle={`Total: ${formatTime(stats.totalFocusTime)}`}
+                    />
+                     <StatCard 
+                        icon={<Target size={16} />}
+                        title="Goals Completed"
+                        value={`${stats.todayCompletedCount}/${dailyGoalTarget}`}
+                        subtitle="Today's Goal"
+                        progress={goalsCompletedProgress}
+                    />
+                     <StatCard 
+                        icon={<CheckSquare size={16} />}
+                        title="Steps Completed"
+                        value={`${stats.totalStepsCompletedForInProgressGoals}/${stats.totalStepsForInProgressGoals}`}
+                        subtitle="In Progress Goals"
+                        progress={stepsCompletedProgress}
+                    />
+               </div>
+               <Collapsible open={isQuickStatsOpen} onOpenChange={setIsQuickStatsOpen}>
+                   <CollapsibleTrigger asChild>
+                       <Button variant="ghost" className="w-full text-xs text-muted-foreground">
+                           Quick Stats
+                           {isQuickStatsOpen ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />}
+                       </Button>
+                   </CollapsibleTrigger>
+                   <CollapsibleContent>
+                       <p className="text-center text-xs text-muted-foreground p-2 bg-secondary rounded-md">
+                           Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
+                       </p>
+                   </CollapsibleContent>
+               </Collapsible>
+
             </CardContent>
         </Card>
 
