@@ -1,25 +1,51 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, BookOpen, User } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { coaches } from '@/lib/coaches';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { coachList, coaches } from '@/lib/coaches';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach } = useAppContext();
   const [goalText, setGoalText] = useState('');
+  const [api, setApi] = useState<CarouselApi>()
 
-  const displayCoach = coach || (data.coachId ? coaches[data.coachId] : null);
+  const displayCoach = coach || (data.coachId ? coaches[data.coachId] : coachList[0]);
 
   const handleGenerate = () => {
     if (goalText.trim()) {
       setGoal(goalText.trim());
     }
   };
+
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    const currentCoachIndex = coachList.findIndex(c => c.id === displayCoach.id);
+    if (api.selectedScrollSnap() !== currentCoachIndex) {
+        api.scrollTo(currentCoachIndex);
+    }
+ 
+    const onSelect = () => {
+      const selectedCoach = coachList[api.selectedScrollSnap()];
+      if (selectedCoach.id !== displayCoach.id) {
+          setCoach(selectedCoach.id)
+      }
+    }
+
+    api.on("select", onSelect)
+ 
+    return () => {
+      api.off("select", onSelect)
+    }
+  }, [api, displayCoach, setCoach])
   
   if (!displayCoach) {
     return null; 
@@ -27,7 +53,7 @@ export default function GoalInput() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col p-4 pt-8">
+      <div className="flex flex-1 flex-col p-4">
         <header className="flex items-center justify-between mb-4">
             <Button variant="ghost" size="icon" onClick={viewPersonalCenter}>
               <User className="h-6 w-6" />
@@ -43,13 +69,22 @@ export default function GoalInput() {
         </header>
 
         <main className="flex-1 flex flex-col pt-8">
-            <div className="text-center mb-4">
-                <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{displayCoach.emoji}</div>
-                <p className="font-bold text-2xl">
-                    {displayCoach.name}
-                </p>
-                <p className="text-muted-foreground text-sm">{displayCoach.title}</p>
-            </div>
+            <Carousel setApi={setApi} className="w-full">
+                <CarouselContent>
+                    {coachList.map(c => (
+                        <CarouselItem key={c.id}>
+                             <div className="text-center mb-4">
+                                <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
+                                <p className="font-bold text-2xl">
+                                    {c.name}
+                                </p>
+                                <p className="text-muted-foreground text-sm">{c.title}</p>
+                            </div>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+           
 
             <Card className="w-full">
                 <CardHeader>
