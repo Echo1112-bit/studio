@@ -82,10 +82,10 @@ export default function Archive() {
     return (
       <div className="flex flex-1 flex-col bg-muted">
         <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
             <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal Archive 📚</h1>
+          </Button>
+          <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal Archive 📚</h1>
         </header>
         <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
             <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
@@ -122,7 +122,6 @@ export default function Archive() {
                     <div className="flex items-center gap-2"><Zap className="h-5 w-5 text-primary" /><p><strong>{totalStepsFinished}</strong> steps finished</p></div>
                     <div className="flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /><p><strong>{thisWeekCompleted}</strong> this week</p></div>
                 </div>
-                <p className="text-xs italic text-muted-foreground mt-3 text-center">"{currentCoach.celebrations.final}"</p>
             </CardContent>
         </Card>
 
