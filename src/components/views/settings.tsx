@@ -66,7 +66,7 @@ export default function Settings() {
                 <Label className="font-normal flex items-center gap-2 text-foreground">
                     <Bell className="h-4 w-4" /> Daily Reminder: {data.settings.reminderTime}
                 </Label>
-                <Button variant="link" disabled className="text-xs h-auto p-0">Change</Button>
+                <Button variant="link" className="text-xs h-auto p-0">Change</Button>
              </div>
           </div>
         
