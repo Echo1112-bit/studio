@@ -41,7 +41,7 @@ export default function ActionPlan() {
                      <div className="flex items-start gap-3">
                        <span className="text-lg font-bold text-primary mt-0.5">{step.emoji}</span>
                        <div className="flex-1">
-                        <p className="font-semibold text-base">{step.stepNumber}. {step.actionTitle}</p>
+                        <p className="font-semibold text-base">{step.actionTitle}</p>
                         <p className="text-xs text-muted-foreground italic mt-1">"{step.coachGuidance}"</p>
                        </div>
                      </div>
