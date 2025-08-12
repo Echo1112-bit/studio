@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Settings } from 'lucide-react';
+import { ArrowLeft, Settings, Pause, Play } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,15 +22,19 @@ import {
 export default function Execution() {
   const { data, activeGoal, coach, completeStep, backToGoalInput, viewSettings } = useAppContext();
   const [seconds, setSeconds] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
 
 
   useEffect(() => {
+    if (isPaused) {
+        return;
+    }
     const interval = setInterval(() => {
       setSeconds((s) => s + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [activeGoal?.currentStepIndex]);
+  }, [activeGoal?.currentStepIndex, isPaused]);
 
   if (!coach || !activeGoal || activeGoal.currentStepIndex === -1) return null;
 
@@ -71,8 +75,13 @@ export default function Execution() {
               <p className="text-muted-foreground italic">"{currentStep.coachGuidance}"</p>
             </div>
             {data.settings.showTimer && (
-                <div className="text-center font-mono text-lg p-2 bg-secondary rounded-md">
-                ⏱️ Focused for {formatTime(seconds)}
+                <div className="flex items-center justify-center gap-4 p-2 bg-secondary rounded-md">
+                    <div className="text-center font-mono text-lg flex-1">
+                        ⏱️ Focused for {formatTime(seconds)}
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)}>
+                        {isPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
+                    </Button>
                 </div>
             )}
             <Button 
