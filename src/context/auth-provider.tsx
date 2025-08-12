@@ -4,8 +4,6 @@
 import type { ReactNode, FC } from 'react';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
-import { onAuthStateChanged, signInWithRedirect, GoogleAuthProvider, OAuthProvider, signOut as firebaseSignOut, getRedirectResult } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -19,78 +17,57 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Create a mock user object
+const mockUser: User = {
+  uid: 'mock-user-123',
+  email: 'test@example.com',
+  displayName: 'Test User',
+  photoURL: 'https://placehold.co/100x100.png',
+  providerId: 'google.com',
+  emailVerified: true,
+} as User;
+
+
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // This will not be null if a redirect just happened.
-          setUser(result.user);
-        }
-      })
-      .catch(error => {
-        handleSignInError(error);
-      }).finally(() => {
-        setLoading(false);
-      });
-
-    return () => unsubscribe();
+    // Simulate initial auth check
+    const authStatus = localStorage.getItem('mock-auth-status');
+    if (authStatus === 'logged-in') {
+        setUser(mockUser);
+    }
+    setLoading(false);
   }, []);
 
-  const handleSignInError = (error: any) => {
-    console.error("Sign-in error", error);
-    toast({
-      variant: 'destructive',
-      title: 'Sign In Failed',
-      description: error.message || 'An unknown error occurred. Please try again.',
-    });
-  };
-
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
-    try {
-      setLoading(true);
-      await signInWithRedirect(auth, provider);
-    } catch (error) {
-      handleSignInError(error);
+    setLoading(true);
+    setTimeout(() => {
+      setUser(mockUser);
+      localStorage.setItem('mock-auth-status', 'logged-in');
       setLoading(false);
-    }
+    }, 500);
   };
 
   const signInWithApple = async () => {
-    const provider = new OAuthProvider('apple.com');
-    provider.setCustomParameters({ locale: 'en' });
-    try {
-      setLoading(true);
-      await signInWithRedirect(auth, provider);
-    } catch (error) {
-      handleSignInError(error);
-      setLoading(false);
-    }
+    setLoading(true);
+    setTimeout(() => {
+        setUser(mockUser);
+        localStorage.setItem('mock-auth-status', 'logged-in');
+        setLoading(false);
+    }, 500);
   };
 
   const signOut = async () => {
-    try {
-      await firebaseSignOut(auth);
-      setUser(null);
-    } catch (error) {
-      console.error("Sign-out error", error);
-      toast({
-        variant: 'destructive',
-        title: 'Sign Out Failed',
-        description: 'Could not sign out. Please try again.',
-      });
-    }
+    setLoading(true);
+    setTimeout(() => {
+        setUser(null);
+        localStorage.removeItem('mock-auth-status');
+        setLoading(false);
+        toast({ title: 'Signed Out', description: 'You have been successfully signed out.' });
+    }, 500);
   };
 
   if (loading) {
