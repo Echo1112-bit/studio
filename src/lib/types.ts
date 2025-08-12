@@ -1,3 +1,4 @@
+
 export type CoachId = 'dr-chen' | 'luna' | 'marcus' | 'zoe';
 
 export interface Coach {
@@ -62,7 +63,8 @@ export type AppStatus =
   | 'execution'
   | 'step_completion'
   | 'final_celebration'
-  | 'archive';
+  | 'archive'
+  | 'personal_center';
 
 export interface AppSettings {
     showTimer: boolean;

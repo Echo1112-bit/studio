@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAppContext } from '@/context/app-provider';
@@ -8,6 +9,7 @@ import Execution from '@/components/views/execution';
 import StepCompletion from '@/components/views/step-completion';
 import FinalCelebration from '@/components/views/final-celebration';
 import Archive from '@/components/views/archive';
+import PersonalCenter from '@/components/views/personal-center';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -44,6 +46,8 @@ export default function Home() {
         return <FinalCelebration />;
       case 'archive':
         return <Archive />;
+      case 'personal_center':
+        return <PersonalCenter />;
       default:
         return (
            <div className="flex flex-1 flex-col items-center justify-center">

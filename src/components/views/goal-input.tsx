@@ -4,13 +4,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, BookOpen } from 'lucide-react';
+import { Settings, BookOpen, User } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { SettingsModal } from '@/components/settings-modal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function GoalInput() {
-  const { coach, setGoal, viewArchive } = useAppContext();
+  const { coach, setGoal, viewArchive, viewPersonalCenter } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -29,7 +29,10 @@ export default function GoalInput() {
   return (
     <>
       <div className="flex flex-1 flex-col p-4">
-        <header className="flex items-start justify-end mb-4">
+        <header className="flex items-center justify-between mb-4">
+            <Button variant="ghost" size="icon" onClick={viewPersonalCenter}>
+              <User className="h-6 w-6" />
+            </Button>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={viewArchive}>
               <BookOpen className="h-6 w-6" />

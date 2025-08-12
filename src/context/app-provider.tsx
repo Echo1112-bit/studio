@@ -1,11 +1,13 @@
+
 'use client';
 
 import type { ReactNode } from 'react';
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { AppData, AppSettings, AppStatus, Coach, CoachId, Goal } from '@/lib/types';
 import { coaches } from '@/lib/coaches';
 import { generateActionPlan } from '@/ai/flows/personalized-action-plan-generation';
 import { useToast } from '@/hooks/use-toast';
+import { isSameDay, startOfWeek, differenceInCalendarDays } from 'date-fns';
 
 const LOCAL_STORAGE_KEY = 'pro-coach-ai-data-v3';
 
@@ -25,6 +27,14 @@ interface AppContextType {
   coach?: Coach;
   activeGoal?: Goal;
   appStatus: AppStatus;
+  stats: {
+      inProgressCount: number;
+      completedCount: number;
+      streak: number;
+      totalStepsFinished: number;
+      thisWeekCompleted: number;
+      totalFocusTime: number;
+  };
   setCoach: (coachId: CoachId) => void;
   setGoal: (goal: string) => Promise<void>;
   startPlan: () => void;
@@ -37,6 +47,8 @@ interface AppContextType {
   resetApp: () => void;
   viewArchive: () => void;
   exitArchive: () => void;
+  viewPersonalCenter: () => void;
+  exitPersonalCenter: () => void;
   deleteGoal: (goalId: string) => void;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
 }
@@ -91,6 +103,55 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       root.style.setProperty('--primary', currentCoach.colors.primaryHsl);
     }
   }, [data.darkMode, data.coachId, data.activeGoalId, data.goals]);
+
+  const stats = useMemo(() => {
+    const completedGoals = data.goals.filter(g => g.status === 'completed');
+    
+    let currentStreak = 0;
+    if (completedGoals.length > 0) {
+        const sortedCompletions = completedGoals
+            .map(g => new Date(g.completedAt!))
+            .sort((a, b) => b.getTime() - a.getTime());
+        
+        const uniqueDays = sortedCompletions.filter((date, i, self) => 
+            i === 0 || !isSameDay(date, self[i-1])
+        );
+
+        if (uniqueDays.length > 0) {
+            const today = new Date();
+            const differenceFromToday = differenceInCalendarDays(today, uniqueDays[0]);
+
+            if (differenceFromToday <= 1) {
+                currentStreak = 1;
+                for (let i = 0; i < uniqueDays.length - 1; i++) {
+                    const diff = differenceInCalendarDays(uniqueDays[i], uniqueDays[i+1]);
+                    if (diff === 1) {
+                        currentStreak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    const stepsFinished = data.goals.reduce((acc, goal) => acc + (goal.status === 'completed' ? goal.actionPlan.steps.length : goal.currentStepIndex), 0);
+    
+    const today = new Date();
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
+    const weekCompleted = completedGoals.filter(g => new Date(g.completedAt!) >= weekStart).length;
+    
+    const totalFocusTime = data.goals.reduce((acc, goal) => acc + goal.totalTimeSpent, 0);
+
+    return {
+        inProgressCount: data.goals.filter(g => g.status === 'in-progress').length,
+        completedCount: completedGoals.length,
+        streak: currentStreak,
+        totalStepsFinished: stepsFinished,
+        thisWeekCompleted: weekCompleted,
+        totalFocusTime: totalFocusTime,
+    }
+  }, [data.goals]);
 
   const updateData = useCallback((newData: Partial<AppData>) => {
     setData((prev) => ({ ...prev, ...newData }));
@@ -214,6 +275,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     updateData({ appStatus: 'goal_input' });
   }, [updateData]);
 
+  const viewPersonalCenter = useCallback(() => {
+    updateData({ appStatus: 'personal_center' });
+  }, [updateData]);
+
+  const exitPersonalCenter = useCallback(() => {
+    updateData({ appStatus: 'goal_input' });
+  }, [updateData]);
+
   const deleteGoal = useCallback((goalId: string) => {
     const newGoals = data.goals.filter(g => g.id !== goalId);
     let newActiveGoalId = data.activeGoalId;
@@ -236,6 +305,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     data,
     coach,
     activeGoal,
+    stats,
     appStatus: data.appStatus,
     setCoach,
     setGoal,
@@ -249,6 +319,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     resetApp,
     viewArchive,
     exitArchive,
+    viewPersonalCenter,
+    exitPersonalCenter,
     deleteGoal,
     updateSetting,
   };
