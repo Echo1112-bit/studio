@@ -7,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { useAppContext } from '@/context/app-provider';
 import { coaches } from '@/lib/coaches';
-import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star } from 'lucide-react';
+import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star, Trophy } from 'lucide-react';
 
 const achievementLevels = [
-    { name: 'Productivity Rookie', minGoals: 0 },
-    { name: 'Goal Achiever', minGoals: 25 },
-    { name: 'Focus Master', minGoals: 50 },
-    { name: 'Habit Builder', minGoals: 100 },
-    { name: 'Procrastination Slayer', minGoals: 200 },
+    { name: 'Productivity Rookie', level: 1, minGoals: 0 },
+    { name: 'Goal Achiever', level: 2, minGoals: 25 },
+    { name: 'Focus Master', level: 3, minGoals: 50 },
+    { name: 'Habit Builder', level: 4, minGoals: 100 },
+    { name: 'Procrastination Slayer', level: 5, minGoals: 200 },
 ];
 
 export default function PersonalCenter() {
@@ -38,8 +38,9 @@ export default function PersonalCenter() {
 
     if (nextLevel) {
         goalsToNext = nextLevel.minGoals - completedCount;
+        const goalsForThisLevel = completedCount - level.minGoals;
         const totalGoalsForLevel = nextLevel.minGoals - level.minGoals;
-        progress = ((totalGoalsForLevel - goalsToNext) / totalGoalsForLevel) * 100;
+        progress = (goalsForThisLevel / totalGoalsForLevel) * 100;
     }
 
     return {
@@ -88,13 +89,23 @@ export default function PersonalCenter() {
                     <div className="flex items-center gap-2"><Clock className="h-5 w-5 text-primary" /><p><strong>{totalFocusTime}</strong> focus</p></div>
                     <div className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" /><p><strong>{stats.completedCount}</strong> goals done</p></div>
                 </div>
-                 <div>
-                    <div className="flex justify-between items-end mb-1">
-                        <p className="font-bold flex items-center gap-1"><Award className="h-4 w-4 text-primary" /> {level.name}</p>
-                        {nextLevel && <p className="text-xs text-muted-foreground">{goalsToNextLevel} to {nextLevel.name}</p>}
-                    </div>
-                    <Progress value={levelProgress} />
-                </div>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2"><Trophy className="h-5 w-5"/> Achievement Level</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <p className="font-bold">{level.name} (Level {level.level})</p>
+                <Progress value={levelProgress} />
+                {nextLevel ? (
+                    <p className="text-sm text-muted-foreground">
+                        {stats.completedCount}/{nextLevel.minGoals} goals to {nextLevel.name}
+                    </p>
+                ) : (
+                    <p className="text-sm text-muted-foreground">You've reached the highest level!</p>
+                )}
             </CardContent>
         </Card>
         
