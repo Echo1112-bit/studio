@@ -129,10 +129,10 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
           <SheetDescription>Choose your daily reminder time.</SheetDescription>
         </SheetHeader>
         <div className="relative my-4 flex-1">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
                 <div className="h-12 w-full bg-secondary rounded-lg border-y" />
             </div>
-            <div className="flex items-center justify-center relative z-0">
+            <div className="flex items-center justify-center relative z-10">
                 <TimeColumn values={hours} selectedValue={selectedHour} onSelect={setSelectedHour} type="hour" scrollRef={hourRef}/>
                 <span className="text-3xl font-bold text-foreground pb-1">:</span>
                 <TimeColumn values={minutes} selectedValue={selectedMinute} onSelect={setSelectedMinute} type="minute" scrollRef={minuteRef} />
