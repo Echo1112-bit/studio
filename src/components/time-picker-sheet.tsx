@@ -102,7 +102,7 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
                     data-testid={`${type}-${val}`}
                     data-hour={type === 'hour' ? val : undefined}
                     data-minute={type === 'minute' ? val : undefined}
-                    onClick={() => {
+                    onClick={(e) => {
                         onSelect(val);
                         const el = (e.target as HTMLElement);
                         el.scrollIntoView({ block: 'center', behavior: 'smooth' });
