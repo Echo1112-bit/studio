@@ -265,7 +265,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const continueGoal = useCallback((goalId: string) => {
     const goalToContinue = data.goals.find(g => g.id === goalId);
     if(goalToContinue){
-      updateData({ activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
+      let goalUpdate = { ...goalToContinue };
+      if (goalUpdate.currentStepIndex === -1) {
+        goalUpdate.currentStepIndex = 0;
+      }
+      const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
+      updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
     }
   }, [data.goals, updateData]);
   
