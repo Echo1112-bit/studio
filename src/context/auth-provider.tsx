@@ -4,7 +4,7 @@
 import type { ReactNode, FC } from 'react';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signOut as firebaseSignOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithRedirect, GoogleAuthProvider, OAuthProvider, signOut as firebaseSignOut, getRedirectResult } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
@@ -29,8 +29,14 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setUser(user);
       setLoading(false);
     });
+
+    getRedirectResult(auth).catch(error => {
+      handleSignInError(error);
+      setLoading(false);
+    });
+
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   const handleSignInError = (error: any) => {
     console.error("Sign-in error", error);
@@ -45,9 +51,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-      await signInWithPopup(auth, provider);
+      setLoading(true);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       handleSignInError(error);
+      setLoading(false);
     }
   };
 
@@ -55,9 +63,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const provider = new OAuthProvider('apple.com');
     provider.setCustomParameters({ locale: 'en' });
     try {
-      await signInWithPopup(auth, provider);
+      setLoading(true);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       handleSignInError(error);
+      setLoading(false);
     }
   };
 
