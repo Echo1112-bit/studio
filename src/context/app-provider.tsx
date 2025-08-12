@@ -83,7 +83,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const storedData = localStorage.getItem(key);
       if (storedData) {
         const parsedData: AppData = JSON.parse(storedData);
-        if (['loading', 'generating_plan'].includes(parsedData.appStatus)) {
+        if (['loading', 'generating_plan', 'execution', 'step_completion'].includes(parsedData.appStatus)) {
             parsedData.appStatus = parsedData.coachId ? 'goal_input' : 'coach_selection';
         }
         parsedData.settings = { ...defaultSettings, ...parsedData.settings };
@@ -315,8 +315,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
 
   const exitSettings = useCallback(() => {
+    if(data.activeGoalId){
+        const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
+        if(activeGoal?.status === 'in-progress'){
+            updateData({ appStatus: 'execution' });
+            return;
+        }
+    }
     updateData({ appStatus: 'goal_input' });
-  }, [updateData]);
+  }, [updateData, data.activeGoalId, data.goals]);
 
   const deleteGoal = useCallback((goalId: string) => {
     const newGoals = data.goals.filter(g => g.id !== goalId);

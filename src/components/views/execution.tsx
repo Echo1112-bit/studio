@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,10 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ArrowLeft, Settings } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function Execution() {
-  const { data, activeGoal, coach, completeStep } = useAppContext();
+  const { data, activeGoal, coach, completeStep, backToGoalInput, viewSettings } = useAppContext();
   const [seconds, setSeconds] = useState(0);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,10 +45,16 @@ export default function Execution() {
   };
 
   return (
+    <>
     <div className="flex flex-1 flex-col bg-muted">
-      <header className="p-4 text-center">
-        <p className="text-sm text-muted-foreground">Today's Goal</p>
-        <h1 className="font-bold text-lg truncate">{activeGoal.title}</h1>
+       <header className="p-2 border-b flex items-center justify-between h-[44px] bg-background/80 backdrop-blur-sm">
+        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsLeaveAlertOpen(true)}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="font-bold text-sm">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</h1>
+        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={viewSettings}>
+            <Settings className="h-5 w-5" />
+        </Button>
       </header>
 
       <main className="flex-1 p-4 flex flex-col gap-4">
@@ -42,7 +62,7 @@ export default function Execution() {
           <CardHeader>
             <p className="text-sm font-bold text-primary">✨ CURRENT TASK</p>
             <CardTitle className="text-xl">
-              <span className="text-primary">{currentStep.stepNumber}/{totalSteps}</span> {currentStep.actionTitle}
+              {currentStep.actionTitle}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-between gap-4">
@@ -75,7 +95,7 @@ export default function Execution() {
                     <ul className="space-y-1 pr-4">
                         {upcomingSteps.map(step => (
                             <li key={step.stepNumber} className="text-muted-foreground text-sm truncate">
-                                {step.stepNumber}. {step.actionTitle}
+                                {step.emoji} {step.actionTitle}
                             </li>
                         ))}
                     </ul>
@@ -84,19 +104,23 @@ export default function Execution() {
           </Card>
         )}
       </main>
-
-      <footer className="p-4 text-center">
-        <div className="flex justify-center items-center gap-2">
-            {Array.from({ length: totalSteps }).map((_, i) => (
-                <div key={i} className={cn("h-2.5 w-2.5 rounded-full transition-colors", 
-                    i < activeGoal.currentStepIndex! ? 'bg-primary' : 
-                    i === activeGoal.currentStepIndex! ? 'bg-primary/50 scale-125' : 
-                    'bg-muted-foreground/30'
-                )} />
-            ))}
-        </div>
-        <p className="text-sm text-muted-foreground mt-2">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</p>
-      </footer>
     </div>
+    <AlertDialog open={isLeaveAlertOpen} onOpenChange={setIsLeaveAlertOpen}>
+        <AlertDialogContent>
+        <AlertDialogHeader>
+            <AlertDialogTitle>Leave Current Goal?</AlertDialogTitle>
+            <AlertDialogDescription>
+            You can continue this goal later from your Archives.
+            </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+            <AlertDialogCancel>Stay Here</AlertDialogCancel>
+            <AlertDialogAction onClick={backToGoalInput}>
+            Go to Home
+            </AlertDialogAction>
+        </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -24,13 +25,14 @@ const ActionPlanOutputSchema = z.object({
   steps: z.array(
     z.object({
       stepNumber: z.number().describe('The step number in the action plan.'),
+      emoji: z.string().describe('A single emoji that reflects the coach\'s personality for this specific step.'),
       actionTitle: z.string().describe('A clear, concise, and action-oriented instruction for the step, between 6-10 words. It should include a specific action verb and a clear completion standard. Example: "Open email app and type simple subject"'),
       coachGuidance: z.string().describe('Personalized, encouraging emotional support guidance from the coach for this step, between 12-20 words. This should reduce anxiety and reflect the coach\'s personality. Example: "Something like \'Project Update\' works perfectly - no need to craft the perfect headline!"'),
       timeEstimate: z.string().describe('An approachable, encouraging time estimate (e.g., \'Just 2-3 min\', \'Quick 5-8 min\', \'About 15-20 min\'). The first step should be max 5 minutes.'),
     })
   ).describe('A list of action steps with guidance and time estimates.'),
   totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased encouragingly (e.g., "Around 30 minutes").'),
-  coachComment: z.string().describe('An introductory comment from the coach regarding the generated plan.'),
+  coachComment: z.string().describe('An introductory comment from the coach regarding the generated plan, between 20-30 words.'),
 });
 export type ActionPlanOutput = z.infer<typeof ActionPlanOutputSchema>;
 
@@ -44,36 +46,41 @@ const prompt = ai.definePrompt({
   output: {schema: ActionPlanOutputSchema},
   prompt: `You are an AI-powered procrastination coach, specializing in breaking down large goals into smaller, more manageable steps. Your primary goal is to reduce cognitive load and make tasks feel easy and approachable.
 
-You will generate an action plan consisting of 3-10 micro-tasks. Each task has two distinct layers:
-1.  **actionTitle**: A concise action instruction (6-10 words).
-2.  **coachGuidance**: Emotional support and encouragement (12-20 words).
+You will generate an action plan consisting of 3-10 micro-tasks. Each task has three distinct layers:
+1.  **emoji**: A single, relevant emoji reflecting the coach's personality.
+2.  **actionTitle**: A concise action instruction (6-10 words).
+3.  **coachGuidance**: Emotional support and encouragement (12-20 words).
 
-The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes.
+The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 20-30 words.
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
 
 Output the action plan as a JSON object that conforms to the ActionPlanOutputSchema. The output must be valid JSON.
 
-Here's how each coach should communicate. Adhere to this personality in the coachComment, coachGuidance, and timeEstimate fields:
+Here's how each coach should communicate. Adhere to this personality in the coachComment, coachGuidance, emoji, and timeEstimate fields:
 
 **🧠 Dr. Chen - Rational Analyst**
 - Style: Logical, systematic, data-driven. Uses analytical language.
+- **emoji**: 📊📈📋🔍
 - **actionTitle**: Concise, systematic instructions (e.g., "Gather Q3 sales data files").
 - **coachGuidance**: Rational encouragement, referencing data or logic (e.g., "Start with what you have - research shows incomplete data beats delayed analysis.").
 
 **💖 Luna - Gentle Supporter**
 - Style: Warm, patient, encouraging, supportive. Uses "we" language.
+- **emoji**: 💝🌸✨🤗
 - **actionTitle**: Gentle, progressive actions (e.g., "Write one simple opening sentence").
 - **coachGuidance**: Emotional comfort, pressure relief (e.g., "Just say hello in your own words - there's no wrong way to start, we can always refine it together.").
 
 **⚡ Marcus - Action Coach**
 - Style: Direct, energetic, results-focused. Creates urgency.
+- **emoji**: 🔥🚀💪🎯
 - **actionTitle**: Direct, powerful commands (e.g., "Open that document RIGHT NOW").
 - **coachGuidance**: Motivation catalyst, confidence building (e.g., "Stop overthinking and click it - action beats perfection every single time!").
 
 **😄 Zoe - Fun Motivator**
 - Style: Playful, humorous, stress-relieving. Uses gamification terms.
+- **emoji**: 🎮🌟🎈🎁
 - **actionTitle**: Light, fun, adventurous tasks (e.g., "Pick your favorite writing app").
 - **coachGuidance**: Gamification, stress reduction (e.g., "Choose your weapon for this writing adventure - even napkins work if that's what you've got!").
 

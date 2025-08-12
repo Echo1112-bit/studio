@@ -25,6 +25,7 @@ export interface ActionStep {
   actionTitle: string;
   coachGuidance: string;
   timeEstimate: string;
+  emoji: string;
 }
 
 export interface ActionPlan {
