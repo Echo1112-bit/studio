@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { useAppContext } from '@/context/app-provider';
 import { coaches } from '@/lib/coaches';
-import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star, Trophy, ChevronDown, ChevronUp, CheckSquare } from 'lucide-react';
+import { ArrowLeft, BookCheck, Flame, Target, Zap, Calendar, Award, User as UserIcon, Clock, Star, Trophy, ChevronDown, ChevronUp, CheckSquare, BarChart } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
@@ -36,8 +36,8 @@ const StatCard = ({
     progressText?: string;
 }) => (
     <Card>
-        <CardHeader className="p-3 pb-1">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-muted-foreground truncate">
+        <CardHeader className="p-3 pb-1 flex-row items-center justify-between">
+             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-muted-foreground truncate">
                 {icon} <span className="truncate">{title}</span>
             </CardTitle>
         </CardHeader>
@@ -118,7 +118,7 @@ export default function PersonalCenter() {
         
         <div className="space-y-2">
             <h2 className="text-lg font-bold">🔥 Your Progress</h2>
-            <p className="text-sm text-muted-foreground -mt-1">
+             <p className="text-sm text-muted-foreground -mt-1">
                 Total: {stats.quickStats.totalGoals} goals &bull; {stats.quickStats.totalSteps} steps &bull; Avg: {stats.quickStats.avgStepsPerGoal.toFixed(1)} steps/goal
             </p>
             <div className="grid grid-cols-2 gap-3 pt-2">
@@ -176,4 +176,3 @@ export default function PersonalCenter() {
     </div>
   );
 }
-
