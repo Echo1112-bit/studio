@@ -117,7 +117,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
             </div>
         </div>
         
-        <div className="relative flex-1">
+        <div className="relative flex-1 overflow-y-auto">
             <ScrollArea className="h-full px-6">
                  {isCompleted && (
                     <div className="mb-4 text-center p-2 rounded-lg bg-green-100 border border-green-200">
