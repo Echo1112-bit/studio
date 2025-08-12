@@ -29,15 +29,7 @@ export default function GoalInput() {
   return (
     <>
       <div className="flex flex-1 flex-col p-4">
-        <header className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="text-5xl bg-background p-2 rounded-full shadow-sm">{displayCoach.emoji}</div>
-            <div>
-              <p className="font-bold text-xl">
-                {displayCoach.name}
-              </p>
-            </div>
-          </div>
+        <header className="flex items-start justify-end mb-4">
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={viewArchive}>
               <BookOpen className="h-6 w-6" />
@@ -49,7 +41,14 @@ export default function GoalInput() {
         </header>
 
         <main className="flex flex-1 flex-col justify-center">
-            <p className="text-muted-foreground text-center text-sm mb-2">{displayCoach.title}</p>
+            <div className="text-center mb-4">
+                <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{displayCoach.emoji}</div>
+                <p className="font-bold text-2xl">
+                    {displayCoach.name}
+                </p>
+                <p className="text-muted-foreground text-sm">{displayCoach.title}</p>
+            </div>
+
             <Card className="w-full">
                 <CardHeader>
                     <CardTitle className="text-xl">What are you procrastinating on?</CardTitle>
