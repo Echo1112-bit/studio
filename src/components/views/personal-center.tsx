@@ -56,8 +56,7 @@ const StatCard = ({
 
 export default function PersonalCenter() {
   const { data, exitPersonalCenter, viewArchive, setNewGoal, coach, stats } = useAppContext();
-  const [isQuickStatsOpen, setIsQuickStatsOpen] = useState(false);
-
+  
   const currentCoach = coach || coaches[data.coachId || 'luna'];
 
   const {
@@ -168,8 +167,8 @@ export default function PersonalCenter() {
         </Card>
         
         <div className="grid grid-cols-2 gap-3">
-            <Button onClick={viewArchive}>View All Goals</Button>
-            <Button onClick={setNewGoal} variant="outline">Set New Goal</Button>
+            <Button onClick={viewArchive} variant="outline">View All Goals</Button>
+            <Button onClick={setNewGoal}>Set New Goal</Button>
         </div>
 
       </div>
