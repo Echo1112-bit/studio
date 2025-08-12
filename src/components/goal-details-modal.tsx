@@ -19,8 +19,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import type { Goal } from '@/lib/types';
 import { coaches } from '@/lib/coaches';
-import { format, formatDistanceToNow } from 'date-fns';
-import { X, Clock, Calendar, CheckCircle2, Circle, MoreHorizontal, Trash2, Check, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
+import { Clock, Calendar, CheckCircle2, Circle, MoreHorizontal, Trash2, Check, ExternalLink } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { cn } from '@/lib/utils';
 import {
@@ -49,7 +49,9 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
 
     if (!goal) {
         // The goal might have been deleted, so close the modal.
-        onClose();
+        if (typeof onClose === 'function') {
+            onClose();
+        }
         return null;
     }
 
@@ -75,7 +77,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
         markGoalAsComplete(goal.id);
     }
     
-    const celebrationMessages = {
+    const celebrationMessages: {[key: string]: string} = {
         'dr-chen': "📊 Excellent execution! Data shows success! 📊",
         'luna': "🎉 You've completed this beautifully! 🎉",
         'marcus': "⚡ Amazing work! You crushed it! ⚡",
@@ -89,7 +91,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
         <DialogHeader className="text-left p-6 pb-4">
           <DialogTitle className="text-2xl pr-8">{coach.emoji} {goal.title}</DialogTitle>
           <DialogDescription>
-            Coached by {coach.name} • {goal.status === 'completed' ? 'Completed' : 'In Progress'}
+            Coached by {coach.name} • {isCompleted ? 'Completed' : 'In Progress'}
           </DialogDescription>
         </DialogHeader>
 
@@ -125,7 +127,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
                             <div
                                 key={step.stepNumber}
                                 className={cn(
-                                    "flex items-start gap-3 p-3 rounded-lg transition-colors",
+                                    "flex items-start gap-3 p-3 rounded-lg transition-all duration-200",
                                     !isCompleted && "cursor-pointer hover:bg-secondary"
                                 )}
                                 onClick={() => !isCompleted && toggleStepCompletion(goal.id, step.stepNumber)}
@@ -148,7 +150,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
             </ScrollArea>
              {isCompleted && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="border-4 border-red-500 rounded-lg p-4 -rotate-[15deg] opacity-80">
+                    <div className="border-4 border-red-500 rounded-lg p-4 -rotate-[15deg] opacity-80 bg-red-500/10">
                         <div className="border-2 border-red-500 rounded-lg py-2 px-8">
                             <p className="text-3xl font-extrabold text-red-500 text-center">COMPLETED</p>
                             <p className="text-center text-xs font-bold text-red-400">{format(new Date(goal.completedAt!), 'HH:mm - MMM d, yyyy')}</p>
@@ -173,7 +175,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
                             <span>Mark as Complete</span>
                         </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem onClick={handleDeleteClick} className="text-destructive">
+                    <DropdownMenuItem onClick={handleDeleteClick} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
                         <Trash2 className="mr-2 h-4 w-4" />
                         <span>Delete Goal</span>
                     </DropdownMenuItem>
@@ -215,5 +217,3 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
     </>
   );
 }
-
-    
