@@ -69,8 +69,6 @@ export type AppStatus =
 
 export interface AppSettings {
     showTimer: boolean;
-    reminderLevel: 'light' | 'standard';
-    pauseRemindersWhileWorking: boolean;
     reminderTime: string;
 }
 

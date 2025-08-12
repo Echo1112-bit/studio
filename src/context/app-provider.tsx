@@ -13,8 +13,6 @@ const LOCAL_STORAGE_KEY = 'pro-coach-ai-data-v3';
 
 const defaultSettings: AppSettings = {
     showTimer: true,
-    reminderLevel: 'standard',
-    pauseRemindersWhileWorking: true,
     reminderTime: '9:00 AM',
 };
 
@@ -207,8 +205,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData, data.activeGoalId, data.goals]);
 
   const continueGoal = useCallback((goalId: string) => {
-    updateData({ activeGoalId: goalId, appStatus: 'execution' });
-  }, [updateData]);
+    const goalToContinue = data.goals.find(g => g.id === goalId);
+    if(goalToContinue){
+      updateData({ activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
+    }
+  }, [data.goals, updateData]);
   
   const completeStep = useCallback((timeSpent: number) => {
     if (!activeGoal) return;
@@ -258,8 +259,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
   
   const backToGoalInput = useCallback(() => {
-    updateData({ appStatus: 'goal_input', activeGoalId: undefined });
-  }, [updateData]);
+    const currentCoachId = data.coachId || coaches[0].id;
+    updateData({ appStatus: 'goal_input', activeGoalId: undefined, coachId: currentCoachId });
+  }, [updateData, data.coachId]);
 
   const toggleDarkMode = useCallback(() => {
     updateData({ darkMode: !data.darkMode });
@@ -275,8 +277,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
 
   const exitArchive = useCallback(() => {
-    updateData({ appStatus: 'goal_input', activeGoalId: undefined });
-  }, [updateData]);
+    const currentCoachId = data.coachId || coachList[0].id;
+    updateData({ appStatus: 'goal_input', activeGoalId: undefined, coachId: currentCoachId });
+  }, [updateData, data.coachId]);
 
   const viewPersonalCenter = useCallback(() => {
     updateData({ appStatus: 'personal_center' });
