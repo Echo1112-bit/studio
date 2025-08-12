@@ -54,11 +54,11 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
       setTimeout(() => {
           if (hourRef.current) {
             const el = hourRef.current.querySelector(`[data-hour="${newSelectedHour}"]`);
-            el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            el?.scrollIntoView({ block: 'center' });
           }
           if (minuteRef.current) {
             const el = minuteRef.current.querySelector(`[data-minute="${newSelectedMinute}"]`);
-            el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            el?.scrollIntoView({ block: 'center' });
           }
       }, 100);
     }
@@ -90,20 +90,28 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
     type: 'hour' | 'minute',
     scrollRef: React.RefObject<HTMLDivElement>
   }) => (
-    <ScrollArea ref={scrollRef} className="h-48 flex-1">
-        <div className="flex flex-col items-center justify-center">
+    <ScrollArea 
+        ref={scrollRef} 
+        className="h-48 flex-1"
+        onWheel={(e) => e.stopPropagation()}
+    >
+        <div className="flex flex-col items-center justify-start py-[68px]">
             {values.map(val => (
                 <button
                     key={val}
                     data-testid={`${type}-${val}`}
                     data-hour={type === 'hour' ? val : undefined}
                     data-minute={type === 'minute' ? val : undefined}
-                    onClick={() => onSelect(val)}
+                    onClick={() => {
+                        onSelect(val);
+                        const el = (e.target as HTMLElement);
+                        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }}
                     className={cn(
-                        "w-full text-center py-2 text-2xl font-mono transition-all duration-150",
+                        "w-full text-center py-2 text-2xl font-mono transition-all duration-150 snap-center",
                         selectedValue === val
-                            ? "font-bold text-primary scale-110"
-                            : "text-muted-foreground/50"
+                            ? "font-bold text-foreground"
+                            : "text-muted-foreground/40"
                     )}
                 >
                     {val}
@@ -115,23 +123,23 @@ export function TimePickerSheet({ open, onOpenChange, value, onConfirm }: TimePi
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="max-w-[390px] mx-auto rounded-t-2xl">
-        <SheetHeader className="text-center">
+      <SheetContent side="bottom" className="max-w-[390px] mx-auto rounded-t-2xl flex flex-col h-auto">
+        <SheetHeader className="text-center pb-2">
           <SheetTitle>Set Reminder Time</SheetTitle>
           <SheetDescription>Choose your daily reminder time.</SheetDescription>
         </SheetHeader>
-        <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="h-12 w-full bg-secondary rounded-lg border-y-2 border-primary/50" />
+        <div className="relative my-4 flex-1">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="h-12 w-full bg-secondary rounded-lg border-y" />
             </div>
-            <div className="flex items-center justify-center relative z-10">
+            <div className="flex items-center justify-center relative z-0">
                 <TimeColumn values={hours} selectedValue={selectedHour} onSelect={setSelectedHour} type="hour" scrollRef={hourRef}/>
-                <span className="text-3xl font-bold text-primary pb-1">:</span>
+                <span className="text-3xl font-bold text-foreground pb-1">:</span>
                 <TimeColumn values={minutes} selectedValue={selectedMinute} onSelect={setSelectedMinute} type="minute" scrollRef={minuteRef} />
             </div>
         </div>
         <SheetFooter className="grid grid-cols-2 gap-3 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button onClick={handleConfirm}>Confirm</Button>
         </SheetFooter>
       </SheetContent>
