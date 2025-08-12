@@ -110,7 +110,7 @@ export default function PersonalCenter() {
         </Card>
         
         <div className="grid grid-cols-2 gap-3">
-            <Button onClick={viewArchive} variant="secondary">View All Goals</Button>
+            <Button onClick={viewArchive} variant="outline">View All Goals</Button>
             <Button onClick={setNewGoal}>Set New Goal</Button>
         </div>
 
