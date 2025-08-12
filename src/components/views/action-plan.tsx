@@ -29,7 +29,7 @@ export default function ActionPlan() {
           </div>
 
           <p className="text-center font-bold">
-            Total Estimated Time: {activeGoal.actionPlan.totalTimeEstimate}
+            {activeGoal.actionPlan.totalTimeEstimate}
           </p>
           
           <div className="space-y-2">
