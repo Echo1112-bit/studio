@@ -115,7 +115,7 @@ export default function PersonalCenter() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
                 <Button onClick={setNewGoal}>Set New Goal</Button>
-                <Button onClick={viewArchive} variant="secondary">View Archive</Button>
+                <Button onClick={viewArchive} variant="secondary">View All Goals</Button>
             </CardContent>
         </Card>
 
