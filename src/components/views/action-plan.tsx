@@ -24,7 +24,7 @@ export default function ActionPlan() {
             <span className="text-2xl mt-1">{coach.emoji}</span>
             <div>
               <p className="font-semibold text-sm">{coach.name} says:</p>
-              <p className="text-sm text-muted-foreground italic">"{activeGoal.actionPlan.coachComment}"</p>
+              <p className="text-sm text-muted-foreground italic line-clamp-3">"{activeGoal.actionPlan.coachComment}"</p>
             </div>
           </div>
 
