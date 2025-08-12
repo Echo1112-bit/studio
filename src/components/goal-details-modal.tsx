@@ -23,8 +23,18 @@ interface GoalDetailsModalProps {
   onClose: () => void;
 }
 
-export function GoalDetailsModal({ goal, onClose }: GoalDetailsModalProps) {
-    const { deleteGoal, toggleStepCompletion } = useAppContext();
+export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModalProps) {
+    const { data, deleteGoal, toggleStepCompletion } = useAppContext();
+    
+    // Always get the latest version of the goal from the context
+    const goal = data.goals.find(g => g.id === initialGoal.id);
+
+    if (!goal) {
+        // The goal might have been deleted, so close the modal.
+        onClose();
+        return null;
+    }
+
     const coach = coaches[goal.coachId];
     const totalTimeMinutes = Math.floor(goal.totalTimeSpent / 60);
 
