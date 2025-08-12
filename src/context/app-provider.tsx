@@ -437,12 +437,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             
             // Check if all steps are now completed
             const allStepsCompleted = g.actionPlan.steps.length === newCompletedSteps.length;
+            
+            let status = g.status;
+            let completedAt = g.completedAt;
+
+            if (allStepsCompleted) {
+                status = 'completed';
+                completedAt = new Date().toISOString();
+            } else {
+                status = 'in-progress';
+                completedAt = undefined;
+            }
 
             return {
                 ...g,
                 completedSteps: newCompletedSteps,
-                status: allStepsCompleted ? 'completed' : 'in-progress',
-                completedAt: allStepsCompleted ? new Date().toISOString() : undefined,
+                status,
+                completedAt,
             };
         }
         return g;
