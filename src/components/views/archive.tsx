@@ -58,7 +58,7 @@ export default function Archive() {
           </Button>
           <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal 🎯</h1>
         </header>
-        <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center p-6 text-center pb-24">
             <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
             <h2 className="text-2xl font-bold mb-2">No Goals Yet!</h2>
             <p className="text-muted-foreground mb-6">Your goal history will appear here once you start one.</p>
