@@ -65,6 +65,7 @@ interface AppContextType {
   deleteGoal: (goalId: string) => void;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
   toggleStepCompletion: (goalId: string, stepNumber: number) => void;
+  markGoalAsComplete: (goalId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -274,9 +275,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const goalToContinue = data.goals.find(g => g.id === goalId);
     if(goalToContinue){
       let goalUpdate = { ...goalToContinue };
-      if (goalUpdate.currentStepIndex === -1) {
-        goalUpdate.currentStepIndex = 0;
+
+      let firstUncompletedIndex = -1;
+      for (let i = 0; i < goalUpdate.actionPlan.steps.length; i++) {
+        if (!goalUpdate.completedSteps.includes(goalUpdate.actionPlan.steps[i].stepNumber)) {
+          firstUncompletedIndex = i;
+          break;
+        }
       }
+
+      // If all steps are somehow complete but status is 'in-progress', or no uncompleted step found
+      if (firstUncompletedIndex === -1) {
+         goalUpdate.status = 'completed';
+         goalUpdate.completedAt = new Date().toISOString();
+         goalUpdate.currentStepIndex = -1;
+      } else {
+        goalUpdate.currentStepIndex = firstUncompletedIndex;
+      }
+      
       const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
       updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
     }
@@ -435,10 +451,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 ? completedSteps.filter(sn => sn !== stepNumber) 
                 : [...completedSteps, stepNumber];
             
-            // Check if all steps are now completed
-            const allStepsCompleted = g.actionPlan.steps.length === newCompletedSteps.length;
+            const allStepsCompleted = g.actionPlan.steps.every(step => newCompletedSteps.includes(step.stepNumber));
             
-            let status = g.status;
+            let status: Goal['status'] = g.status;
             let completedAt = g.completedAt;
 
             if (allStepsCompleted) {
@@ -459,6 +474,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         return g;
     });
     updateData({ goals: newGoals });
+  }, [data.goals, updateData]);
+
+  const markGoalAsComplete = useCallback((goalId: string) => {
+      const newGoals = data.goals.map(g => {
+          if(g.id === goalId) {
+              const allStepNumbers = g.actionPlan.steps.map(s => s.stepNumber);
+              return {
+                  ...g,
+                  status: 'completed' as const,
+                  completedAt: new Date().toISOString(),
+                  completedSteps: allStepNumbers,
+              }
+          }
+          return g;
+      });
+      updateData({ goals: newGoals });
   }, [data.goals, updateData]);
 
   const value: AppContextType = {
@@ -486,6 +517,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     deleteGoal,
     updateSetting,
     toggleStepCompletion,
+    markGoalAsComplete,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -498,3 +530,5 @@ export const useAppContext = (): AppContextType => {
   }
   return context;
 };
+
+    
