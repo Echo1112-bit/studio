@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Bell, Clock, Trash2, Timer } from 'lucide-react';
+import { ArrowLeft, Bell, Clock, Trash2, Timer, Sun, Moon } from 'lucide-react';
 import type { CoachId } from '@/lib/types';
 
 export default function Settings() {
@@ -29,11 +29,14 @@ export default function Settings() {
 
   return (
     <div className="flex flex-1 flex-col bg-muted">
-      <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
+      <header className="p-4 border-b flex items-center justify-between gap-2 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitSettings}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Settings</h1>
+        <h1 className="text-xl font-bold">Settings</h1>
+        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={toggleDarkMode}>
+            {data.darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -98,16 +101,6 @@ export default function Settings() {
              </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-3 bg-background">
-            <Label htmlFor="dark-mode" className="font-semibold flex items-center gap-2">
-              Dark Mode
-            </Label>
-            <Switch
-              id="dark-mode"
-              checked={data.darkMode}
-              onCheckedChange={toggleDarkMode}
-            />
-          </div>
           <div className="flex items-center justify-between rounded-lg border p-3 bg-background">
             <div className="space-y-1">
                 <Label htmlFor="show-timer" className="font-semibold flex items-center gap-2">
