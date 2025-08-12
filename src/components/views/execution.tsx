@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Execution() {
-  const { activeGoal, coach, completeStep } = useAppContext();
+  const { data, activeGoal, coach, completeStep } = useAppContext();
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -50,9 +50,11 @@ export default function Execution() {
               <span className="text-3xl mt-1">{coach.emoji}</span>
               <p className="text-muted-foreground italic">"{currentStep.coachGuidance}"</p>
             </div>
-            <div className="text-center font-mono text-lg p-2 bg-secondary rounded-md">
-              ⏱️ Focused for {formatTime(seconds)}
-            </div>
+            {data.settings.showTimer && (
+                <div className="text-center font-mono text-lg p-2 bg-secondary rounded-md">
+                ⏱️ Focused for {formatTime(seconds)}
+                </div>
+            )}
             <Button 
                 onClick={() => completeStep(seconds)} 
                 className="w-full h-14 text-xl font-bold"

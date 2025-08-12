@@ -9,9 +9,11 @@ import StepCompletion from '@/components/views/step-completion';
 import FinalCelebration from '@/components/views/final-celebration';
 import Archive from '@/components/views/archive';
 import { Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
-  const { appStatus } = useAppContext();
+  const { appStatus, coach } = useAppContext();
 
   const renderContent = () => {
     switch (appStatus) {
@@ -22,9 +24,14 @@ export default function Home() {
       case 'generating_plan':
         return (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="font-semibold text-lg">Your coach is building the perfect plan...</p>
-            <p className="text-muted-foreground">This should only take a moment.</p>
+            <Card className="w-full max-w-sm">
+                <CardContent className="p-8 text-center">
+                    <div className="text-6xl mb-4">{coach?.emoji}</div>
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+                    <p className="font-semibold text-lg mt-4">Your coach is building the perfect plan...</p>
+                    <p className="text-muted-foreground mt-1">This should only take a moment.</p>
+                </CardContent>
+            </Card>
           </div>
         );
       case 'action_plan':
@@ -47,7 +54,10 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-1 flex-col">
+    <main className={cn(
+        "flex flex-1 flex-col",
+        (appStatus === 'goal_input' || appStatus === 'generating_plan') && 'bg-muted'
+    )}>
       {appStatus === 'loading' ? (
         <div className="flex flex-1 flex-col items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />

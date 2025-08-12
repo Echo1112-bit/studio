@@ -4,19 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ArrowLeft } from 'lucide-react';
 
 export default function ActionPlan() {
-  const { activeGoal, coach, startPlan, regeneratePlan } = useAppContext();
+  const { activeGoal, coach, startPlan, backToGoalInput } = useAppContext();
 
   if (!coach || !activeGoal || !activeGoal.actionPlan) return null;
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="p-4 border-b">
-        <h1 className="text-xl font-bold text-center">Your Action Plan 📋</h1>
-        <p className="text-center text-muted-foreground mt-1 text-sm">
-          <strong>Today's Goal:</strong> {activeGoal.title}
-        </p>
+      <header className="p-4 border-b flex items-center gap-2 justify-between">
+        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={backToGoalInput}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Action Plan 📋</h1>
+        <div className="w-9"></div>
       </header>
       
       <ScrollArea className="flex-1">
@@ -53,7 +55,7 @@ export default function ActionPlan() {
       </ScrollArea>
       
       <footer className="p-4 border-t grid grid-cols-2 gap-3 mt-auto">
-        <Button variant="outline" onClick={regeneratePlan}>Regenerate Plan</Button>
+        <Button variant="outline" onClick={backToGoalInput}>Regenerate Plan</Button>
         <Button 
           className="font-bold" 
           onClick={startPlan}

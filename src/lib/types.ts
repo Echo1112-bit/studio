@@ -64,10 +64,15 @@ export type AppStatus =
   | 'final_celebration'
   | 'archive';
 
+export interface AppSettings {
+    showTimer: boolean;
+}
+
 export interface AppData {
   appStatus: AppStatus;
   coachId?: CoachId;
   activeGoalId?: string;
   goals: Goal[];
   darkMode: boolean;
+  settings: AppSettings;
 }

@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Settings, BookOpen } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { SettingsModal } from '@/components/settings-modal';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function GoalInput() {
   const { coach, setGoal, viewArchive } = useAppContext();
@@ -14,7 +15,7 @@ export default function GoalInput() {
 
   // This component can be rendered without a coach if we come from the archive page
   const displayCoach = coach || {
-    id: 'luna', name: 'ProCoach', emoji: '🎯', serviceEmoji: '✨', examples: ['Plan my week', 'Write a blog post'],
+    id: 'luna', name: 'ProCoach', emoji: '🎯', title: 'Your Coach', serviceEmoji: '✨', examples: ['Plan my week', 'Write a blog post'],
     colors: { primary: '#1e3a8a' }
   };
 
@@ -27,13 +28,14 @@ export default function GoalInput() {
   return (
     <>
       <div className="flex flex-1 flex-col p-4">
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="text-4xl bg-secondary p-2 rounded-full">{displayCoach.emoji}</div>
+            <div className="text-5xl bg-background p-2 rounded-full shadow-sm">{displayCoach.emoji}</div>
             <div>
-              <p className="font-bold text-lg">
-                Coach {displayCoach.name} at your service {displayCoach.serviceEmoji}
+              <p className="font-bold text-xl">
+                {displayCoach.name}
               </p>
+              <p className="text-muted-foreground text-sm">{displayCoach.title}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -46,35 +48,44 @@ export default function GoalInput() {
           </div>
         </header>
 
-        <main className="flex flex-1 flex-col">
-          <h1 className="text-xl font-semibold mb-4">What would you like to accomplish today?</h1>
-          <Textarea
-            value={goalText}
-            onChange={(e) => setGoalText(e.target.value)}
-            placeholder="Describe your goal..."
-            className="flex-1 text-base resize-none mb-4"
-            rows={6}
-          />
-          <div className="mb-6 text-sm text-muted-foreground">
-            <p className="font-semibold mb-1">Some ideas from your coach:</p>
-            <ul className="list-disc list-inside">
-              {displayCoach.examples.map((ex, i) => (
-                <li key={i} className="whitespace-pre-wrap">{ex}</li>
-              ))}
-            </ul>
-          </div>
+        <main className="flex flex-1 flex-col justify-center">
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="text-xl">What are you procrastinating on?</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Textarea
+                        value={goalText}
+                        onChange={(e) => setGoalText(e.target.value)}
+                        placeholder="I need to..."
+                        className="text-base resize-none"
+                        rows={3}
+                    />
+                    <Button
+                        onClick={handleGenerate}
+                        disabled={!goalText.trim()}
+                        className="w-full text-lg h-12 font-bold"
+                        style={{ backgroundColor: displayCoach.colors.primary }}
+                    >
+                        Create Plan
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card className="mt-4">
+                 <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-semibold">Some ideas from {displayCoach.name}:</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                    {displayCoach.examples.map((ex, i) => (
+                        <li key={i} className="whitespace-pre-wrap">{ex}</li>
+                    ))}
+                    </ul>
+                </CardContent>
+            </Card>
+
         </main>
-        
-        <footer className="mt-auto">
-          <Button
-            onClick={handleGenerate}
-            disabled={!goalText.trim()}
-            className="w-full text-lg h-12 font-bold"
-            style={{ backgroundColor: displayCoach.colors.primary }}
-          >
-            Generate Action Plan
-          </Button>
-        </footer>
       </div>
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>

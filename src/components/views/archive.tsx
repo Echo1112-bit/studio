@@ -1,16 +1,16 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppContext } from '@/context/app-provider';
 import { coaches } from '@/lib/coaches';
 import type { Goal } from '@/lib/types';
-import { formatDistanceToNow } from 'date-fns';
-import { ArrowLeft, BookCheck, Clock, Trash2, Plus, View } from 'lucide-react';
+import { formatDistanceToNow, isSameDay } from 'date-fns';
+import { ArrowLeft, BookCheck, Clock, Trash2, Plus, View, Flame, Target, CheckSquare, Calendar, Zap } from 'lucide-react';
 import { GoalDetailsModal } from '@/components/goal-details-modal';
 import {
   AlertDialog,
@@ -27,7 +27,7 @@ import {
 type FilterStatus = 'all' | 'in-progress' | 'completed';
 
 export default function Archive() {
-  const { data, exitArchive, continueGoal, deleteGoal, setNewGoal } = useAppContext();
+  const { data, exitArchive, continueGoal, deleteGoal, setNewGoal, coach } = useAppContext();
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
@@ -39,60 +39,116 @@ export default function Archive() {
     return goal.status === filter;
   });
 
-  const inProgressCount = data.goals.filter(g => g.status === 'in-progress').length;
-  const completedCount = data.goals.filter(g => g.status === 'completed').length;
-  
+  const {
+    inProgressCount,
+    completedCount,
+    streak,
+    totalStepsFinished,
+    thisWeekCompleted,
+  } = useMemo(() => {
+    const completedGoals = data.goals.filter(g => g.status === 'completed');
+    
+    let currentStreak = 0;
+    if (completedGoals.length > 0) {
+        const sortedCompletions = completedGoals.map(g => new Date(g.completedAt!)).sort((a, b) => b.getTime() - a.getTime());
+        if (isSameDay(sortedCompletions[0], new Date()) || isSameDay(sortedCompletions[0], new Date(Date.now() - 86400000))) {
+            currentStreak = 1;
+            for (let i = 0; i < sortedCompletions.length - 1; i++) {
+                const diff = (sortedCompletions[i].getTime() - sortedCompletions[i+1].getTime()) / (1000 * 3600 * 24);
+                if (diff <= 1) {
+                    currentStreak++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    const stepsFinished = data.goals.reduce((acc, goal) => acc + (goal.status === 'completed' ? goal.actionPlan.steps.length : goal.currentStepIndex), 0);
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const weekCompleted = completedGoals.filter(g => new Date(g.completedAt!) >= startOfWeek).length;
+
+    return {
+        inProgressCount: data.goals.filter(g => g.status === 'in-progress').length,
+        completedCount: completedGoals.length,
+        streak: currentStreak,
+        totalStepsFinished: stepsFinished,
+        thisWeekCompleted: weekCompleted,
+    }
+  }, [data.goals]);
+
   if (data.goals.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center p-6 text-center bg-muted">
         <BookCheck className="h-24 w-24 text-muted-foreground/50 mb-4" />
         <h2 className="text-2xl font-bold mb-2">No Goals Yet!</h2>
         <p className="text-muted-foreground mb-6">Your goal history will appear here once you start one.</p>
-        <Button onClick={setNewGoal}>
+        <Button onClick={exitArchive}>
           <Plus className="mr-2 h-4 w-4" /> Create First Goal
         </Button>
       </div>
     );
   }
 
+  const currentCoach = coach || coaches[data.coachId || 'luna'];
+
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="p-4 border-b flex items-center gap-2">
+    <div className="flex flex-1 flex-col bg-muted">
+      <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-bold">Your Goal Archive 📚</h1>
+        <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">Your Goal Archive 📚</h1>
       </header>
       
-      <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)} className="p-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
-          <TabsTrigger value="in-progress">In Progress ({inProgressCount})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="p-4 space-y-4">
+        <Card>
+            <CardHeader className="pb-2">
+                <CardTitle className="text-lg">My Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center gap-2"><Flame className="h-5 w-5 text-primary" /><p><strong>{streak}</strong> days streak</p></div>
+                    <div className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" /><p><strong>{completedCount}</strong> goals completed</p></div>
+                    <div className="flex items-center gap-2"><Zap className="h-5 w-5 text-primary" /><p><strong>{totalStepsFinished}</strong> steps finished</p></div>
+                    <div className="flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /><p><strong>{thisWeekCompleted}</strong> this week</p></div>
+                </div>
+                <p className="text-xs italic text-muted-foreground mt-3 text-center">"{currentCoach.celebrations.final}"</p>
+            </CardContent>
+        </Card>
+
+        <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)}>
+            <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
+            <TabsTrigger value="in-progress">In Progress ({inProgressCount})</TabsTrigger>
+            <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
+            </TabsList>
+        </Tabs>
+      </div>
+
 
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
         {filteredGoals.map(goal => {
-          const coach = coaches[goal.coachId];
+          const goalCoach = coaches[goal.coachId];
           const progress = goal.status === 'completed' ? 100 : Math.round(((goal.currentStepIndex) / goal.actionPlan.steps.length) * 100);
           const timeAgo = formatDistanceToNow(new Date(goal.status === 'completed' ? goal.completedAt! : goal.createdAt), { addSuffix: true });
           const totalTimeMinutes = Math.floor(goal.totalTimeSpent / 60);
 
           return (
-            <Card key={goal.id} className="overflow-hidden">
-              <CardHeader className="p-3" style={{ backgroundColor: `${coach.colors.primary}1A`}}>
+            <Card key={goal.id} className="overflow-hidden bg-background">
+              <CardHeader className="p-3" style={{ backgroundColor: `${goalCoach.colors.primary}1A`}}>
                 <div className="flex justify-between items-center">
-                  <p className="text-xs font-bold" style={{color: coach.colors.primary}}>
+                  <p className="text-xs font-bold" style={{color: goalCoach.colors.primary}}>
                     {goal.status === 'completed' ? '✅ COMPLETED' : '🔄 IN PROGRESS'}
                   </p>
                   <p className="text-xs text-muted-foreground">{timeAgo}</p>
                 </div>
-                <h3 className="font-bold text-lg">{coach.emoji} {goal.title}</h3>
+                <h3 className="font-bold text-lg">{goalCoach.emoji} {goal.title}</h3>
               </CardHeader>
               <CardContent className="p-3">
                 <div className="flex justify-between items-center text-sm mb-3">
-                  <p>{coach.name}</p>
+                  <p>{goalCoach.name}</p>
                   {goal.status === 'in-progress' ? (
                     <p className="text-muted-foreground">{goal.currentStepIndex < 0 ? 0 : goal.currentStepIndex}/{goal.actionPlan.steps.length} steps</p>
                   ) : (
@@ -106,12 +162,20 @@ export default function Archive() {
                 
                 <div className="flex gap-2 mt-4">
                   {goal.status === 'in-progress' && (
-                    <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{backgroundColor: coach.colors.primary}}>Continue</Button>
+                    <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{backgroundColor: goalCoach.colors.primary}}>Continue</Button>
                   )}
-                  <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">
-                    <View className="mr-2 h-4 w-4" />
-                    View Details
-                  </Button>
+                  {goal.status === 'completed' && (
+                    <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
+                        <View className="mr-2 h-4 w-4" />
+                        View Details
+                    </Button>
+                  )}
+                  {goal.status === 'in-progress' && (
+                    <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">
+                      <View className="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                  )}
                   <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon">
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
@@ -122,8 +186,8 @@ export default function Archive() {
         })}
       </div>
       
-      <footer className="p-4 border-t">
-        <Button onClick={setNewGoal} className="w-full">
+      <footer className="p-4 border-t bg-background sticky bottom-0">
+        <Button onClick={exitArchive} className="w-full">
           <Plus className="mr-2 h-4 w-4" /> New Goal
         </Button>
       </footer>

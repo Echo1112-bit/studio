@@ -25,7 +25,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/context/app-provider';
 import { coachList, coaches } from '@/lib/coaches';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { X, Bell, Clock, Trash2, Timer } from 'lucide-react';
 import type { CoachId } from '@/lib/types';
 
 interface SettingsModalProps {
@@ -34,7 +34,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp } = useAppContext();
+  const { data, coach: currentCoach, toggleDarkMode, setCoach, resetApp, updateSetting } = useAppContext();
 
   const handleSetCoach = (coachId: CoachId) => {
     setCoach(coachId);
@@ -77,7 +77,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
           <div className="flex items-center justify-between rounded-lg border p-3">
-            <Label htmlFor="dark-mode" className="font-semibold">
+            <Label htmlFor="dark-mode" className="font-semibold flex items-center gap-2">
               Dark Mode
             </Label>
             <Switch
@@ -86,27 +86,40 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               onCheckedChange={toggleDarkMode}
             />
           </div>
-          <div className="space-y-2 rounded-lg border border-destructive/50 p-3">
-            <h3 className="font-semibold text-destructive">Danger Zone</h3>
-            <p className="text-sm text-muted-foreground">This will permanently delete all your data.</p>
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <div className="space-y-1">
+                <Label htmlFor="show-timer" className="font-semibold flex items-center gap-2">
+                    <Timer className="h-4 w-4" /> Show Timer
+                </Label>
+                <p className="text-xs text-muted-foreground">Display timer during focus sessions.</p>
+            </div>
+            <Switch
+              id="show-timer"
+              checked={data.settings.showTimer}
+              onCheckedChange={(checked) => updateSetting('showTimer', checked)}
+            />
+          </div>
+          <div className="space-y-2 rounded-lg border p-3">
+            <h3 className="font-semibold flex items-center gap-2"><Trash2 className="h-4 w-4" /> Clear Cache</h3>
+            <p className="text-sm text-muted-foreground">This will clear temporary data but preserve goals and settings.</p>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full">Reset Everything</Button>
+                <Button variant="outline" className="w-full">Clear Cache</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your selected coach, goal, and all progress.
+                    This action will clear temporary app data. Your goals will not be deleted.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => {
-                      resetApp();
+                      resetApp(); // This function is now used for cache clearing
                       onClose();
                   }}>
-                    Yes, reset everything
+                    Yes, clear cache
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
