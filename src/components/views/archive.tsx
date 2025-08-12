@@ -111,6 +111,14 @@ export default function Archive() {
       </header>
       
       <div className="p-4 space-y-4">
+        <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)}>
+            <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
+            <TabsTrigger value="in-progress">In Progress ({inProgressCount})</TabsTrigger>
+            <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
+            </TabsList>
+        </Tabs>
+
         <Card>
             <CardHeader className="pb-2">
                 <CardTitle className="text-lg">My Progress</CardTitle>
@@ -124,14 +132,6 @@ export default function Archive() {
                 </div>
             </CardContent>
         </Card>
-
-        <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)}>
-            <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
-            <TabsTrigger value="in-progress">In Progress ({inProgressCount})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
-            </TabsList>
-        </Tabs>
       </div>
 
 
