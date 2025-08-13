@@ -101,8 +101,11 @@ const generateActionPlanFlow = ai.defineFlow(
     inputSchema: ActionPlanInputSchema,
     outputSchema: ActionPlanOutputSchema,
   },
-  async input => {
+  async (input) => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('AI failed to generate a valid action plan. The model returned null.');
+    }
+    return output;
   }
 );
