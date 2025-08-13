@@ -103,49 +103,46 @@ export default function Archive() {
 
             return (
                 <Card key={goal.id} className="overflow-hidden bg-background">
-                <CardHeader className="p-3">
-                    <div className="flex justify-between items-center">
+                <CardHeader className="p-3 relative">
                     <Badge variant="outline" className={cn(
-                        "text-xs font-bold",
+                        "absolute top-3 right-3 text-xs font-bold",
                         goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
                     )}>
                         {goal.status === 'completed' ? '✅ COMPLETED' : '🔄 IN PROGRESS'}
                     </Badge>
-                    <p className="text-xs text-muted-foreground">{timeAgo}</p>
-                    </div>
-                    <h3 className="font-bold text-lg flex items-center gap-2 pt-2">
-                    <span>{goalCoach.emoji}</span>
-                    {goal.title}
+                    <h3 className="font-bold text-lg flex items-center gap-2 pr-24">
+                        <span>{goalCoach.emoji}</span>
+                        {goal.title}
                     </h3>
+                    <p className="text-xs text-muted-foreground mt-1">{timeAgo}</p>
                 </CardHeader>
-                <CardContent className="p-3">
+                <CardContent className="p-3 pt-0">
                     <div className="flex justify-between items-center text-sm mb-3">
-                    <p>{goalCoach.name}</p>
-                    {goal.status === 'in-progress' ? (
-                        <p className="text-muted-foreground">{goal.currentStepIndex < 0 ? 0 : goal.currentStepIndex}/{goal.actionPlan.steps.length} steps</p>
-                    ) : (
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {totalTimeMinutes} min focus
-                        </div>
-                    )}
+                        {goal.status === 'in-progress' ? (
+                            <p className="text-muted-foreground">{goal.currentStepIndex < 0 ? 0 : goal.currentStepIndex}/{goal.actionPlan.steps.length} steps</p>
+                        ) : (
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                {totalTimeMinutes} min focus
+                            </div>
+                        )}
                     </div>
                     {goal.status === 'in-progress' && <Progress value={progress} />}
                     
                     <div className="flex gap-2 mt-4">
                     {goal.status === 'in-progress' && (
-                        <Button onClick={() => continueGoal(goal.id)} className="flex-1">Continue</Button>
+                        <>
+                            <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">
+                                <View className="mr-2 h-4 w-4" />
+                                View
+                            </Button>
+                            <Button onClick={() => continueGoal(goal.id)} className="flex-1">Continue</Button>
+                        </>
                     )}
                     {goal.status === 'completed' && (
                         <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
                             <View className="mr-2 h-4 w-4" />
                             View Details
-                        </Button>
-                    )}
-                    {goal.status === 'in-progress' && (
-                        <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">
-                        <View className="mr-2 h-4 w-4" />
-                        View
                         </Button>
                     )}
                     <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon">
