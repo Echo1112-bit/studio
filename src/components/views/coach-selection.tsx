@@ -1,5 +1,6 @@
-'use client';
 
+'use client';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { coachList } from '@/lib/coaches';
 import { useAppContext } from '@/context/app-provider';
@@ -23,7 +24,11 @@ export default function CoachSelection() {
           >
             <CardHeader>
               <div className="flex items-center gap-4">
-                <div className="text-6xl">{coach.emoji}</div>
+                {coach.isCharacter ? (
+                  <Image src={coach.emoji} alt={coach.name} width={64} height={64} className="rounded-full bg-background" />
+                ) : (
+                  <div className="text-6xl">{coach.emoji}</div>
+                )}
                 <div>
                   <CardTitle>{coach.name}</CardTitle>
                   <CardDescription className="font-semibold">{coach.title}</CardDescription>

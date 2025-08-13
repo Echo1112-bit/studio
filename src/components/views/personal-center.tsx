@@ -2,6 +2,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -107,7 +108,11 @@ export default function PersonalCenter() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <Card>
             <CardContent className="p-4 flex items-center gap-4">
-                <div className="text-5xl bg-background p-2 rounded-full shadow-sm">{currentCoach.emoji}</div>
+                {currentCoach.isCharacter ? (
+                    <Image src={currentCoach.emoji} alt={currentCoach.name} width={56} height={56} className="rounded-full bg-background" />
+                ) : (
+                  <div className="text-5xl bg-background p-2 rounded-full shadow-sm">{currentCoach.emoji}</div>
+                )}
                 <div>
                     <p className="font-semibold text-lg">Hi there!</p>
                     <p className="text-sm text-muted-foreground italic">"You're building such great habits. Keep it up!"</p>

@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,7 +59,11 @@ export default function Settings() {
                       : 'hover:bg-secondary'
                   )}
                 >
-                  <span className="text-2xl">{c.emoji}</span>
+                  {c.isCharacter ? (
+                    <Image src={c.emoji} alt={c.name} width={32} height={32} className="rounded-full bg-background" />
+                  ) : (
+                    <span className="text-2xl">{c.emoji}</span>
+                  )}
                   <div>
                     <p className="font-semibold text-sm">{c.name}</p>
                     <p className="text-xs text-muted-foreground">{c.title}</p>

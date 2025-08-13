@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
@@ -71,7 +72,11 @@ export default function Execution() {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-between gap-4">
             <div className="flex items-start gap-3 rounded-lg bg-secondary p-3">
-              <span className="text-3xl mt-1">{coach.emoji}</span>
+              {coach.isCharacter ? (
+                <Image src={coach.emoji} alt={coach.name} width={48} height={48} className="rounded-full bg-background" />
+              ) : (
+                <span className="text-3xl mt-1">{coach.emoji}</span>
+              )}
               <p className="text-muted-foreground italic">"{currentStep.coachGuidance}"</p>
             </div>
             {data.settings.showTimer && (

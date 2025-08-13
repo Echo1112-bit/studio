@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, BookOpen, User } from 'lucide-react';
@@ -68,13 +69,24 @@ export default function GoalInput() {
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col pt-8">
+        <main className="flex-1 flex flex-col pt-2">
             <Carousel setApi={setApi} className="w-full">
                 <CarouselContent>
                     {coachList.map(c => (
                         <CarouselItem key={c.id}>
-                             <div className="text-center mb-4">
-                                <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
+                             <div className="text-center mb-4 h-48 flex flex-col justify-end items-center">
+                                {c.isCharacter ? (
+                                    <Image 
+                                      data-ai-hint="person talking"
+                                      src={c.emoji} 
+                                      alt={c.name} 
+                                      width={160} 
+                                      height={160} 
+                                      className="object-contain"
+                                    />
+                                ) : (
+                                    <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
+                                )}
                                 <p className="font-bold text-2xl">
                                     {c.name}
                                 </p>

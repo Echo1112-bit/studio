@@ -6,6 +6,7 @@ export interface Coach {
   name: string;
   title: string;
   emoji: string;
+  isCharacter?: boolean;
   quote: string;
   perfectFor: string;
   colors: {
