@@ -4,10 +4,6 @@
 /**
  * @fileOverview Generates a personalized action plan for a given goal, broken down into smaller steps,
  * tailored to the user's selected coach personality.
- *
- * - generateActionPlan - A function that generates the action plan.
- * - ActionPlanInput - The input type for the generateActionPlan function.
- * - ActionPlanOutput - The return type for the generateActionPlan function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -46,12 +42,23 @@ const prompt = ai.definePrompt({
   output: {schema: ActionPlanOutputSchema},
   prompt: `You are an AI-powered procrastination coach, specializing in breaking down large goals into smaller, more manageable steps. Your primary goal is to reduce cognitive load and make tasks feel easy and approachable.
 
-You will generate an action plan consisting of 3-10 micro-tasks. Each task has three distinct layers:
+You will generate an action plan consisting of 5-10 micro-tasks. The plan must follow the "Difficulty Rhythm Curve," a "mountain-shaped" structure where tasks progress from easy to hard and back to easy.
+
+The five phases are:
+1.  **Warm-up Zone (First 2 steps)**:
+    *   Step 1: Extremely simple, must take 5 minutes or less.
+    *   Step 2: Slightly more complex, must take 8 minutes or less.
+2.  **Ramp-up Zone (Medium Difficulty)**: Gradually increase task complexity. Time estimate should be 15 minutes or less.
+3.  **Peak Zone (Hardest Task)**: The most complex and critical task. Time estimate should be 25 minutes or less.
+4.  **Buffer Zone (Medium Difficulty)**: A task of medium complexity to transition from the peak. Time estimate should be 15 minutes or less.
+5.  **Cool-down Zone (Easy Task)**: A simple, quick task to conclude the plan with a sense of accomplishment. Time estimate should be 8 minutes or less.
+
+Each task has three distinct layers:
 1.  **emoji**: A single, relevant emoji reflecting the coach's personality.
 2.  **actionTitle**: A concise action instruction (6-10 words).
 3.  **coachGuidance**: Emotional support and encouragement (12-20 words).
 
-The plan must also include approachable time estimates and reflect the selected coach's unique personality. The first step must be extremely simple and take a maximum of 5 minutes. The introductory coachComment must be between 10-20 words.
+The plan must also include approachable time estimates and reflect the selected coach's unique personality. The introductory coachComment must be between 10-20 words.
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
