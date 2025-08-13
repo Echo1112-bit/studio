@@ -76,8 +76,9 @@ export default function Archive() {
   const currentCoach = coach || coaches[data.coachId || 'luna'];
 
   return (
+    <>
     <div className="flex flex-1 flex-col bg-muted">
-      <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10">
+      <header className="p-4 border-b flex items-center gap-2 bg-background sticky top-0 z-10 shrink-0">
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={exitArchive}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -133,7 +134,7 @@ export default function Archive() {
                     
                     <div className="flex gap-2 mt-4">
                     {goal.status === 'in-progress' && (
-                        <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{backgroundColor: goalCoach.colors.primary}}>Continue</Button>
+                        <Button onClick={() => continueGoal(goal.id)} className="flex-1">Continue</Button>
                     )}
                     {goal.status === 'completed' && (
                         <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
@@ -158,8 +159,8 @@ export default function Archive() {
         </div>
       </main>
       
-      <footer className="p-4 border-t bg-background sticky bottom-0">
-        <Button onClick={exitArchive} className="w-full">
+      <footer className="p-4 border-t bg-background sticky bottom-0 shrink-0">
+        <Button onClick={setNewGoal} className="w-full">
           <Plus className="mr-2 h-4 w-4" /> New Goal
         </Button>
       </footer>
@@ -194,5 +195,6 @@ export default function Archive() {
       )}
 
     </div>
+    </>
   );
 }
