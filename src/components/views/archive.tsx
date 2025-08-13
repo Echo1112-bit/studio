@@ -106,14 +106,14 @@ export default function Archive() {
                       <span className="text-2xl mt-1">{goalCoach.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-xl">{goal.title}</h3>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center justify-between mt-1">
+                            <p className="text-xs text-muted-foreground">{timeAgo}</p>
                             <Badge variant="outline" className={cn(
                                 "text-xs font-bold border-2 whitespace-nowrap",
                                 goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
                             )}>
                                 {goal.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS'}
                             </Badge>
-                          <p className="text-xs text-muted-foreground">{timeAgo}</p>
                         </div>
                       </div>
                     </div>
@@ -138,8 +138,8 @@ export default function Archive() {
                         <div className="flex gap-3 mt-4">
                           {goal.status === 'in-progress' ? (
                               <>
-                                <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
                                 <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
+                                <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
                               </>
                           ) : (
                               <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
