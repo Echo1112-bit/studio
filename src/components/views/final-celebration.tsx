@@ -64,7 +64,7 @@ export default function FinalCelebration() {
             variant="ghost"
             className="text-muted-foreground"
           >
-            View Archives
+            View My Goals
           </Button>
         </div>
       </footer>
