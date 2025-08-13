@@ -65,7 +65,7 @@ export default function StepCompletion() {
             <div className="flex-1 flex flex-col items-center justify-center">
                 <h1 className="text-5xl font-bold mb-4">{celebration}</h1>
                 {coach.isCharacter ? (
-                    <Image src={coach.emoji} alt={coach.name} width={96} height={96} className="rounded-full bg-background mb-4 shadow-lg" />
+                    <Image src={coach.emoji} alt={coach.name} width={96} height={96} className="rounded-full bg-background mb-4 shadow-lg object-contain" />
                 ) : (
                     <div className="text-5xl bg-background p-3 rounded-full mb-4 shadow-lg">{coach.emoji}</div>
                 )}

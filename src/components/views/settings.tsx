@@ -60,7 +60,7 @@ export default function Settings() {
                   )}
                 >
                   {c.isCharacter ? (
-                    <Image src={c.emoji} alt={c.name} width={32} height={32} className="rounded-full bg-background" />
+                    <Image src={c.emoji} alt={c.name} width={32} height={32} className="rounded-full bg-background object-contain" />
                   ) : (
                     <span className="text-2xl">{c.emoji}</span>
                   )}

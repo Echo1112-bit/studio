@@ -25,7 +25,7 @@ export default function CoachSelection() {
             <CardHeader>
               <div className="flex items-center gap-4">
                 {coach.isCharacter ? (
-                  <Image src={coach.emoji} alt={coach.name} width={64} height={64} className="rounded-full bg-background" />
+                  <Image src={coach.emoji} alt={coach.name} width={64} height={64} className="rounded-full bg-background object-contain" />
                 ) : (
                   <div className="text-6xl">{coach.emoji}</div>
                 )}

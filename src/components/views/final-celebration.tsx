@@ -26,7 +26,7 @@ export default function FinalCelebration() {
                 alt={coach.name} 
                 width={128} 
                 height={128} 
-                className="rounded-full bg-background mb-4 shadow-lg animate-bounce"
+                className="rounded-full bg-background mb-4 shadow-lg animate-bounce object-contain"
             />
         ) : (
             <div className="text-7xl bg-background p-4 rounded-full mb-4 shadow-lg animate-bounce">{coach.emoji}</div>
