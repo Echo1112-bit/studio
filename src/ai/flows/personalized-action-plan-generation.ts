@@ -28,7 +28,7 @@ const ActionPlanOutputSchema = z.object({
     })
   ).describe('A list of action steps with guidance and time estimates.'),
   totalTimeEstimate: z.string().describe('The estimated total time to complete all steps, phrased as "Takes about X minutes of focused work" (e.g., "Takes about 45 minutes of focused work").'),
-  coachComment: z.string().describe('A very concise introductory comment from the coach regarding the generated plan, between 10-20 words.'),
+  coachComment: z.string().describe('A very concise introductory comment (10-20 words) from the coach that provides both emotional value and an actionable tip related to the user\'s goal.'),
 });
 export type ActionPlanOutput = z.infer<typeof ActionPlanOutputSchema>;
 
@@ -58,7 +58,7 @@ Each task has three distinct layers:
 2.  **actionTitle**: A concise action instruction (6-10 words).
 3.  **coachGuidance**: Emotional support and encouragement (12-20 words).
 
-The plan must also include approachable time estimates and reflect the selected coach's unique personality. The introductory coachComment must be between 10-20 words.
+The plan must also include approachable time estimates and reflect the selected coach's unique personality. The introductory coachComment must be between 10-20 words and provide both emotional value and an actionable tip related to the user's goal.
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
