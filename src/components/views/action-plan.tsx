@@ -42,11 +42,7 @@ export default function ActionPlan() {
           <div className="p-4 space-y-4">
             <div className="space-y-2 rounded-lg bg-secondary p-3 h-auto max-h-[120px]">
               <div className="flex items-start gap-3">
-                  {coach.isCharacter ? (
-                      <Image src={coach.emoji} alt={coach.name} width={40} height={40} className="rounded-full bg-background" />
-                  ) : (
                     <span className="text-2xl mt-1">{coach.emoji}</span>
-                  )}
                   <div>
                     <p className="font-semibold text-sm">{coach.name} says:</p>
                     <p className="text-sm text-muted-foreground italic line-clamp-3">"{activeGoal.actionPlan.coachComment}"</p>

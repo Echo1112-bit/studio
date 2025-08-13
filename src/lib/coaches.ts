@@ -5,8 +5,7 @@ export const coaches: Record<CoachId, Coach> = {
     id: 'dr-chen',
     name: 'Dr. Chen',
     title: 'Rational Analyst',
-    emoji: '/coaches/dr-chen.png',
-    isCharacter: true,
+    emoji: '🧠',
     quote: "Let's solve this step by step with data and logic.",
     perfectFor: 'Analytical thinkers',
     colors: {

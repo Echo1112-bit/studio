@@ -20,17 +20,7 @@ export default function FinalCelebration() {
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">
           🎉 You Did It! 🎉
         </h1>
-        {coach.isCharacter ? (
-            <Image 
-                src={coach.emoji} 
-                alt={coach.name} 
-                width={128} 
-                height={128} 
-                className="rounded-full bg-background mb-4 shadow-lg animate-bounce object-contain"
-            />
-        ) : (
-            <div className="text-7xl bg-background p-4 rounded-full mb-4 shadow-lg animate-bounce">{coach.emoji}</div>
-        )}
+        <div className="text-7xl bg-background p-4 rounded-full mb-4 shadow-lg animate-bounce">{coach.emoji}</div>
         <p className="text-lg italic text-foreground/80 max-w-md">"{coach.celebrations.final}"</p>
       </main>
 

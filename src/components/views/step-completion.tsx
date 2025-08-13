@@ -64,11 +64,7 @@ export default function StepCompletion() {
         <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
             <div className="flex-1 flex flex-col items-center justify-center">
                 <h1 className="text-5xl font-bold mb-4">{celebration}</h1>
-                {coach.isCharacter ? (
-                    <Image src={coach.emoji} alt={coach.name} width={96} height={96} className="rounded-full bg-background mb-4 shadow-lg object-contain" />
-                ) : (
-                    <div className="text-5xl bg-background p-3 rounded-full mb-4 shadow-lg">{coach.emoji}</div>
-                )}
+                <div className="text-5xl bg-background p-3 rounded-full mb-4 shadow-lg">{coach.emoji}</div>
                 <p className="text-lg font-semibold mb-6" style={{color: coach.colors.primary}}>You're doing great!</p>
                 
                 <Card className="w-full mb-4 text-left shadow-md">

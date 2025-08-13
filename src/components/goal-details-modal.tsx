@@ -91,11 +91,7 @@ export function GoalDetailsModal({ goal: initialGoal, onClose }: GoalDetailsModa
       <DialogContent className="max-w-[370px] rounded-2xl flex flex-col h-[90vh] p-0">
         <DialogHeader className="text-left p-6 pb-4">
             <DialogTitle className="text-2xl pr-8 flex items-center gap-2">
-                {coach.isCharacter ? (
-                    <Image src={coach.emoji} alt={coach.name} width={32} height={32} className="rounded-full bg-background" />
-                ) : (
-                    <span>{coach.emoji}</span>
-                )} 
+                <span>{coach.emoji}</span> 
                 {goal.title}
             </DialogTitle>
           <DialogDescription>

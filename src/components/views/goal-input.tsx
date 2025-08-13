@@ -75,18 +75,7 @@ export default function GoalInput() {
                     {coachList.map(c => (
                         <CarouselItem key={c.id}>
                              <div className="text-center mb-4 h-48 flex flex-col justify-end items-center">
-                                {c.isCharacter ? (
-                                    <Image 
-                                      data-ai-hint="person talking"
-                                      src={c.emoji} 
-                                      alt={c.name} 
-                                      width={160} 
-                                      height={160} 
-                                      className="object-contain"
-                                    />
-                                ) : (
-                                    <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
-                                )}
+                                <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
                                 <p className="font-bold text-2xl">
                                     {c.name}
                                 </p>

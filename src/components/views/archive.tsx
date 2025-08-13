@@ -110,11 +110,7 @@ export default function Archive() {
                   <p className="text-xs text-muted-foreground">{timeAgo}</p>
                 </div>
                 <h3 className="font-bold text-lg flex items-center gap-2">
-                  {goalCoach.isCharacter ? (
-                    <Image src={goalCoach.emoji} alt={goalCoach.name} width={24} height={24} className="rounded-full bg-background" />
-                  ) : (
-                    <span>{goalCoach.emoji}</span>
-                  )}
+                  <span>{goalCoach.emoji}</span>
                   {goal.title}
                 </h3>
               </CardHeader>
