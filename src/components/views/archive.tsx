@@ -86,70 +86,70 @@ export default function Archive() {
       </header>
       
       <main className="flex-1 overflow-y-auto p-4 space-y-4">
-        <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)}>
-            <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
-            <TabsTrigger value="in-progress">In Progress ({inProgressCount})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
-            </TabsList>
+        <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)} className="px-2">
+          <TabsList className="grid w-full grid-cols-3 bg-muted rounded-full">
+            <TabsTrigger value="all" className="rounded-full">All ({data.goals.length})</TabsTrigger>
+            <TabsTrigger value="in-progress" className="rounded-full">In Progress ({inProgressCount})</TabsTrigger>
+            <TabsTrigger value="completed" className="rounded-full">Completed ({completedCount})</TabsTrigger>
+          </TabsList>
         </Tabs>
 
         <div className="space-y-4">
             {filteredGoals.map(goal => {
             const goalCoach = coaches[goal.coachId];
-            const progress = goal.status === 'completed' ? 100 : Math.round(((goal.currentStepIndex) / goal.actionPlan.steps.length) * 100);
             const timeAgo = formatDistanceToNow(new Date(goal.status === 'completed' ? goal.completedAt! : goal.createdAt), { addSuffix: true });
-            const totalTimeMinutes = Math.floor(goal.totalTimeSpent / 60);
-
+            
             return (
-                <Card key={goal.id} className="overflow-hidden bg-background">
-                <CardHeader className="p-3 relative">
-                    <Badge variant="outline" className={cn(
-                        "absolute top-3 right-3 text-xs font-bold",
-                        goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
-                    )}>
-                        {goal.status === 'completed' ? '✅ COMPLETED' : '🔄 IN PROGRESS'}
-                    </Badge>
-                    <h3 className="font-bold text-lg flex items-center gap-2 pr-24">
-                        <span>{goalCoach.emoji}</span>
-                        {goal.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-1">{timeAgo}</p>
-                </CardHeader>
-                <CardContent className="p-3 pt-0">
-                    <div className="flex justify-between items-center text-sm mb-3">
-                        {goal.status === 'in-progress' ? (
-                            <p className="text-muted-foreground">{goal.currentStepIndex < 0 ? 0 : goal.currentStepIndex}/{goal.actionPlan.steps.length} steps</p>
-                        ) : (
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                                <Clock className="h-4 w-4" />
-                                {totalTimeMinutes} min focus
-                            </div>
-                        )}
+                <Card key={goal.id} className="overflow-hidden bg-background shadow-md">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{goalCoach.emoji}</span>
+                        <div>
+                          <h3 className="font-bold text-base line-clamp-1">{goal.title}</h3>
+                          <p className="text-xs text-muted-foreground">{timeAgo}</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className={cn(
+                          "text-xs font-bold border-2",
+                          goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                      )}>
+                          {goal.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS'}
+                      </Badge>
                     </div>
-                    {goal.status === 'in-progress' && <Progress value={progress} />}
-                    
-                    <div className="flex gap-2 mt-4">
+
                     {goal.status === 'in-progress' && (
-                        <>
-                            <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">
-                                <View className="mr-2 h-4 w-4" />
-                                View
-                            </Button>
-                            <Button onClick={() => continueGoal(goal.id)} className="flex-1">Continue</Button>
-                        </>
+                       <>
+                        <div className="flex justify-between items-center text-sm mb-3">
+                            <p className="text-muted-foreground">{goal.currentStepIndex < 0 ? 0 : goal.completedSteps.length}/{goal.actionPlan.steps.length} steps</p>
+                        </div>
+                        <Progress value={(goal.completedSteps.length / goal.actionPlan.steps.length) * 100} className="h-2" />
+                       </>
                     )}
+
                     {goal.status === 'completed' && (
-                        <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
-                            <View className="mr-2 h-4 w-4" />
-                            View Details
-                        </Button>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>Total focus time: {Math.floor(goal.totalTimeSpent / 60)} minutes</span>
+                        </div>
                     )}
-                    <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    
+                    <div className="flex gap-3 mt-4">
+                      {goal.status === 'in-progress' ? (
+                          <>
+                            <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
+                            <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
+                          </>
+                      ) : (
+                          <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
+                              View Details
+                          </Button>
+                      )}
+                      <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                </CardContent>
+                  </CardContent>
                 </Card>
             )
             })}
