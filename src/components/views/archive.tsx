@@ -82,7 +82,7 @@ export default function Archive() {
         <h1 className="text-xl font-bold text-center absolute left-1/2 -translate-x-1/2">My Goal 🎯</h1>
       </header>
       
-      <div className="p-4 space-y-4">
+      <div className="p-4">
         <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterStatus)}>
             <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="all">All ({data.goals.length})</TabsTrigger>
@@ -91,7 +91,6 @@ export default function Archive() {
             </TabsList>
         </Tabs>
       </div>
-
 
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
         {filteredGoals.map(goal => {
