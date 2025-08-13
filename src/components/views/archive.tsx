@@ -138,8 +138,8 @@ export default function Archive() {
                         <div className="flex gap-3 mt-4">
                           {goal.status === 'in-progress' ? (
                               <>
-                                <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
                                 <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
+                                <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
                               </>
                           ) : (
                               <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
