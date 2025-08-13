@@ -5,7 +5,7 @@ export const coaches: Record<CoachId, Coach> = {
     id: 'dr-chen',
     name: 'Dr. Chen',
     title: 'Rational Analyst',
-    emoji: 'https://placehold.co/128x128.png',
+    emoji: '/coaches/dr-chen.png',
     isCharacter: true,
     quote: "Let's solve this step by step with data and logic.",
     perfectFor: 'Analytical thinkers',
