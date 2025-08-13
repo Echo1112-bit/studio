@@ -40,19 +40,24 @@ export default function ActionPlan() {
         
         <ScrollArea className="flex-1">
           <div className="p-4 space-y-4">
-            <div className="space-y-2 rounded-lg bg-secondary p-3 h-auto max-h-[120px]">
+            <div className="space-y-2 rounded-lg bg-secondary p-3 h-auto">
               <div className="flex items-start gap-3">
-                    <span className="text-2xl mt-1">{coach.emoji}</span>
+                  <span className="text-2xl mt-1">{coach.emoji}</span>
                   <div>
                     <p className="font-semibold text-sm">{coach.name} says:</p>
-                    <p className="text-sm text-muted-foreground italic line-clamp-3">"{activeGoal.actionPlan.coachComment}"</p>
+                    <p className="text-sm text-muted-foreground italic">"{activeGoal.actionPlan.coachComment}"</p>
                   </div>
               </div>
-               <p className="text-sm font-semibold flex items-center gap-2 pt-2">
-                  <Clock className="h-4 w-4" /> {activeGoal.actionPlan.totalTimeEstimate}
-              </p>
             </div>
             
+             <Card>
+                <CardContent className="p-3">
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                        <Clock className="h-4 w-4" /> {activeGoal.actionPlan.totalTimeEstimate}
+                    </p>
+                </CardContent>
+            </Card>
+
             <div className="space-y-2">
               {activeGoal.actionPlan.steps.map((step) => (
                 <Card key={step.stepNumber} className="bg-background/70">
