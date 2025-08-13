@@ -102,52 +102,54 @@ export default function Archive() {
             return (
                 <Card key={goal.id} className="overflow-hidden bg-background shadow-md">
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start gap-4 mb-3">
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <span className="text-2xl mt-1">{goalCoach.emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-base">{goal.title}</h3>
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl mt-1">{goalCoach.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-xl">{goal.title}</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className={cn(
+                                "text-xs font-bold border-2 whitespace-nowrap",
+                                goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                            )}>
+                                {goal.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS'}
+                            </Badge>
                           <p className="text-xs text-muted-foreground">{timeAgo}</p>
                         </div>
                       </div>
-                      <Badge variant="outline" className={cn(
-                          "text-xs font-bold border-2 whitespace-nowrap",
-                          goal.status === 'completed' ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"
-                      )}>
-                          {goal.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS'}
-                      </Badge>
                     </div>
 
-                    {goal.status === 'in-progress' && (
-                       <>
-                        <div className="flex justify-between items-center text-sm mb-1">
-                            <p className="text-muted-foreground">{goal.completedSteps.length}/{goal.actionPlan.steps.length} steps</p>
-                        </div>
-                        <Progress value={(goal.completedSteps.length / goal.actionPlan.steps.length) * 100} className="h-2" />
-                       </>
-                    )}
+                    <div className="mt-4">
+                        {goal.status === 'in-progress' && (
+                           <>
+                            <div className="flex justify-between items-center text-sm mb-1">
+                                <p className="text-muted-foreground">{goal.completedSteps.length}/{goal.actionPlan.steps.length} steps</p>
+                            </div>
+                            <Progress value={(goal.completedSteps.length / goal.actionPlan.steps.length) * 100} className="h-2" />
+                           </>
+                        )}
 
-                    {goal.status === 'completed' && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4" />
-                            <span>Total focus time: {Math.floor(goal.totalTimeSpent / 60)} minutes</span>
-                        </div>
-                    )}
-                    
-                    <div className="flex gap-3 mt-4">
-                      {goal.status === 'in-progress' ? (
-                          <>
-                            <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
-                            <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
-                          </>
-                      ) : (
-                          <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
-                              View Details
+                        {goal.status === 'completed' && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>Total focus time: {Math.floor(goal.totalTimeSpent / 60)} minutes</span>
+                            </div>
+                        )}
+                        
+                        <div className="flex gap-3 mt-4">
+                          {goal.status === 'in-progress' ? (
+                              <>
+                                <Button onClick={() => setSelectedGoal(goal)} variant="outline" className="flex-1">View</Button>
+                                <Button onClick={() => continueGoal(goal.id)} className="flex-1" style={{ backgroundColor: goalCoach.colors.primary }}>Continue</Button>
+                              </>
+                          ) : (
+                              <Button onClick={() => setSelectedGoal(goal)} variant="secondary" className="flex-1">
+                                  View Details
+                              </Button>
+                          )}
+                          <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive shrink-0">
+                              <Trash2 className="h-4 w-4" />
                           </Button>
-                      )}
-                      <Button onClick={() => setGoalToDelete(goal)} variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive shrink-0">
-                          <Trash2 className="h-4 w-4" />
-                      </Button>
+                        </div>
                     </div>
                   </CardContent>
                 </Card>
