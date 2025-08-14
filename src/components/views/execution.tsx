@@ -63,14 +63,14 @@ export default function Execution() {
       </header>
 
       <main className="flex-1 p-4 flex flex-col gap-4">
-        <Card className="flex-grow flex flex-col border-2 border-primary shadow-2xl">
+        <Card className="flex flex-col border-2 border-primary shadow-2xl">
           <CardHeader>
             <p className="text-sm font-bold text-primary">✨ CURRENT TASK (Step {activeGoal.currentStepIndex + 1} of {totalSteps})</p>
             <CardTitle className="text-xl">
               {currentStep.actionTitle}
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-between gap-4">
+          <CardContent className="flex flex-col justify-between gap-4">
             <div className="flex items-start gap-3 rounded-lg bg-secondary p-3">
               <span className="text-3xl mt-1">{coach.emoji}</span>
               <p className="text-muted-foreground italic">"{currentStep.coachGuidance}"</p>
