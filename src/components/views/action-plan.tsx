@@ -32,7 +32,7 @@ export default function ActionPlan() {
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsLeaveAlertOpen(true)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-center">Your Action Plan</h1>
+          <h1 className="text-xl font-bold text-center truncate flex-1 min-w-0 px-2">{activeGoal.title}</h1>
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={viewSettings}>
               <Settings className="h-5 w-5" />
           </Button>
