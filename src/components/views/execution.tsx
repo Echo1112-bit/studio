@@ -56,7 +56,7 @@ export default function Execution() {
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsLeaveAlertOpen(true)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-bold text-sm text-center">Step {activeGoal.currentStepIndex + 1} of {totalSteps}</h1>
+        <h1 className="text-xl font-bold text-center truncate flex-1 min-w-0 px-2">{activeGoal.title}</h1>
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={viewSettings}>
             <Settings className="h-5 w-5" />
         </Button>
@@ -65,7 +65,7 @@ export default function Execution() {
       <main className="flex-1 p-4 flex flex-col gap-4">
         <Card className="flex-grow flex flex-col border-2 border-primary shadow-2xl">
           <CardHeader>
-            <p className="text-sm font-bold text-primary">✨ CURRENT TASK</p>
+            <p className="text-sm font-bold text-primary">✨ CURRENT TASK (Step {activeGoal.currentStepIndex + 1} of {totalSteps})</p>
             <CardTitle className="text-xl">
               {currentStep.actionTitle}
             </CardTitle>
