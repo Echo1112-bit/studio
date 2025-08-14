@@ -50,8 +50,8 @@ The five phases are:
     *   Step 2: Slightly more complex, must take 8 minutes or less.
 2.  **Ramp-up Zone (Medium Difficulty)**: Gradually increase task complexity. Time estimate should be 15 minutes or less.
 3.  **Peak Zone (Hardest Task)**: The most complex and critical task. Time estimate should be 25 minutes or less.
-4.  **Buffer Zone (Medium Difficulty)**: A task of medium complexity to transition from the peak. Time estimate should be 15 minutes or less.
-5.  **Cool-down Zone (Easy Task)**: A simple, quick task to conclude the plan with a sense of accomplishment. Time estimate should be 8 minutes or less.
+4.  **Buffer Zone (Medium Difficulty)**: A task of medium complexity to transition from the peak.
+5.  **Cool-down Zone (Easy Task)**: A simple, quick task to conclude the plan with a sense of accomplishment.
 
 Each task has three distinct layers:
 1.  **emoji**: A single, relevant emoji reflecting the coach's personality.
@@ -62,8 +62,6 @@ The plan must also include approachable time estimates and reflect the selected 
 
 Selected Coach: {{coachPersonality}}
 Goal: {{goal}}
-
-Output the action plan as a JSON object that conforms to the ActionPlanOutputSchema. The output must be valid JSON.
 
 Here's how each coach should communicate. Adhere to this personality in the coachComment, coachGuidance, emoji, and timeEstimate fields:
 
@@ -91,7 +89,8 @@ Here's how each coach should communicate. Adhere to this personality in the coac
 - **actionTitle**: Light, fun, adventurous tasks (e.g., "Pick your favorite writing app").
 - **coachGuidance**: Gamification, stress reduction (e.g., "Choose your weapon for this writing adventure - even napkins work if that's what you've got!").
 
-ActionPlanOutputSchema description: {{{output.schema.description}}}
+**IMPORTANT**: You MUST output a valid JSON object that strictly conforms to the ActionPlanOutputSchema. DO NOT return null.
+ActionPlanOutputSchema: {{{jsonSchema output.schema}}}
 `,
 });
 
