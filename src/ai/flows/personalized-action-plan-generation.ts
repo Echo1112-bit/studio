@@ -90,7 +90,6 @@ Here's how each coach should communicate. Adhere to this personality in the coac
 - **coachGuidance**: Gamification, stress reduction (e.g., "Choose your weapon for this writing adventure - even napkins work if that's what you've got!").
 
 **IMPORTANT**: You MUST output a valid JSON object that strictly conforms to the ActionPlanOutputSchema. DO NOT return null.
-ActionPlanOutputSchema: {{{jsonSchema output.schema}}}
 `,
 });
 
