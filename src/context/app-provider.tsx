@@ -264,23 +264,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       
       const newGoals = [...data.goals, newGoal];
       
-      // If the goal is for today, go to plan, otherwise stay on goal input page to show the list
-      if (isSameDay(parseISO(plan.targetDate), new Date())) {
-         updateData({ 
-            goals: newGoals,
-            activeGoalId: newGoal.id,
-            appStatus: 'action_plan'
-        });
-      } else {
-        toast({
-            title: "Goal Scheduled!",
-            description: `"${title}" has been scheduled for ${format(parseISO(plan.targetDate), 'MMMM do')}.`
-        });
-        updateData({ 
-            goals: newGoals,
-            appStatus: 'goal_input' // Stay on this page
-        });
-      }
+      updateData({ 
+        goals: newGoals,
+        activeGoalId: newGoal.id,
+        appStatus: 'action_plan'
+      });
 
     } catch (error) {
       console.error('Failed to generate action plan', error);
