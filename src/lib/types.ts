@@ -29,10 +29,14 @@ export interface ActionStep {
   emoji: string;
 }
 
+export type ExecutionMode = 'focus' | 'checklist';
+
 export interface ActionPlan {
   steps: ActionStep[];
   totalTimeEstimate: string;
   coachComment: string;
+  targetDate: string; // YYYY-MM-DD
+  recommendedMode: ExecutionMode;
 }
 
 export type GoalStatus = 'in-progress' | 'completed';

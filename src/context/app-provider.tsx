@@ -8,7 +8,7 @@ import { coaches, coachList } from '@/lib/coaches';
 import { generateActionPlanAction } from '@/ai/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './auth-provider';
-import { isSameDay, startOfWeek, differenceInCalendarDays, startOfToday } from 'date-fns';
+import { isSameDay, startOfWeek, differenceInCalendarDays, startOfToday, parseISO } from 'date-fns';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'pro-coach-ai-data-v4';
 
@@ -30,6 +30,7 @@ interface AppContextType {
   coach?: Coach;
   activeGoal?: Goal;
   appStatus: AppStatus;
+  todayGoals: Goal[];
   stats: {
       streak: number;
       bestStreak: number;
@@ -226,6 +227,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setData((prev) => ({ ...prev, ...newData }));
   }, []);
 
+  const todayGoals = useMemo(() => {
+    return data.goals.filter(goal => goal.status === 'in-progress' && isSameDay(parseISO(goal.actionPlan.targetDate), new Date()));
+  }, [data.goals]);
+
   const setCoach = useCallback((coachId: CoachId) => {
     updateData({ coachId, appStatus: 'goal_input' });
   }, [updateData]);
@@ -234,7 +239,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!data.coachId) return;
     updateData({ appStatus: 'generating_plan' });
     try {
-      const plan = await generateActionPlanAction({ goal: title, coachPersonality: coaches[data.coachId].name as any });
+      const currentDate = new Date().toISOString().split('T')[0];
+      const plan = await generateActionPlanAction({ 
+        goal: title, 
+        coachPersonality: coaches[data.coachId].name as any,
+        currentDate: currentDate,
+      });
       const newGoal: Goal = {
         id: new Date().toISOString(),
         title,
@@ -247,11 +257,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         stepHistory: [],
         completedSteps: [],
       };
-      updateData({ 
-        goals: [...data.goals, newGoal],
-        activeGoalId: newGoal.id,
-        appStatus: 'action_plan'
-      });
+      
+      const newGoals = [...data.goals, newGoal];
+      
+      // If the goal is for today, go to plan, otherwise stay on goal input page to show the list
+      if (isSameDay(parseISO(plan.targetDate), new Date())) {
+         updateData({ 
+            goals: newGoals,
+            activeGoalId: newGoal.id,
+            appStatus: 'action_plan'
+        });
+      } else {
+        toast({
+            title: "Goal Scheduled!",
+            description: `"${title}" has been scheduled for ${format(parseISO(plan.targetDate), 'MMMM do')}.`
+        });
+        updateData({ 
+            goals: newGoals,
+            appStatus: 'goal_input' // Stay on this page
+        });
+      }
+
     } catch (error) {
       console.error('Failed to generate action plan', error);
       toast({
@@ -289,12 +315,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
          goalUpdate.status = 'completed';
          goalUpdate.completedAt = new Date().toISOString();
          goalUpdate.currentStepIndex = -1;
+         const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
+         updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'final_celebration', coachId: goalToContinue.coachId });
+
       } else {
         goalUpdate.currentStepIndex = firstUncompletedIndex;
+        const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
+        updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
       }
-      
-      const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
-      updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
     }
   }, [data.goals, updateData]);
   
@@ -500,6 +528,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     data,
     coach,
     activeGoal,
+    todayGoals,
     stats,
     appStatus: data.appStatus,
     setCoach,

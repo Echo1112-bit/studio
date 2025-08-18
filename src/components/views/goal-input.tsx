@@ -5,14 +5,16 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, BookOpen, User } from 'lucide-react';
+import { Settings, BookOpen, User, ListTodo, Zap, CheckSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { coachList, coaches } from '@/lib/coaches';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { format, isToday } from 'date-fns';
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [api, setApi] = useState<CarouselApi>()
 
@@ -21,6 +23,7 @@ export default function GoalInput() {
   const handleGenerate = () => {
     if (goalText.trim()) {
       setGoal(goalText.trim());
+      setGoalText('');
     }
   };
 
@@ -74,7 +77,7 @@ export default function GoalInput() {
                 <CarouselContent>
                     {coachList.map(c => (
                         <CarouselItem key={c.id}>
-                             <div className="text-center mb-4 h-48 flex flex-col justify-end items-center">
+                             <div className="text-center mb-4 h-40 flex flex-col justify-end items-center">
                                 <div className="text-6xl bg-background p-2 rounded-full shadow-sm inline-block mb-2">{c.emoji}</div>
                                 <p className="font-bold text-2xl">
                                     {c.name}
@@ -85,11 +88,10 @@ export default function GoalInput() {
                     ))}
                 </CarouselContent>
             </Carousel>
-           
 
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle className="text-xl">What are you procrastinating on?</CardTitle>
+                    <CardTitle className="text-xl">What's on your mind?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Textarea
@@ -110,18 +112,43 @@ export default function GoalInput() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-4">
-                 <CardHeader className="pb-2">
-                    <CardTitle className="text-base font-semibold">Some ideas from {displayCoach.name}:</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                    {displayCoach.examples.map((ex, i) => (
-                        <li key={i}>{ex}</li>
-                    ))}
-                    </ul>
-                </CardContent>
-            </Card>
+            {todayGoals.length > 0 && (
+                 <Card className="mt-4 flex-1 flex flex-col min-h-0">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <ListTodo className="h-5 w-5" />
+                            Today's List
+                        </CardTitle>
+                        <CardDescription>
+                            Here are the tasks for today. Let's get them done!
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 overflow-hidden px-3 pb-3">
+                        <ScrollArea className="h-full">
+                            <div className="space-y-2 pr-3">
+                                {todayGoals.map(goal => (
+                                    <button
+                                        key={goal.id}
+                                        onClick={() => continueGoal(goal.id)}
+                                        className="w-full text-left p-3 rounded-lg border bg-background hover:bg-secondary transition-all flex items-center justify-between"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-xl">{coaches[goal.coachId].emoji}</span>
+                                            <p className="font-semibold">{goal.title}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                           {goal.actionPlan.recommendedMode === 'focus' 
+                                                ? <Zap className="h-4 w-4" title="Focus Mode" />
+                                                : <CheckSquare className="h-4 w-4" title="Checklist Mode" />
+                                            }
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+            )}
         </main>
       </div>
     </>
