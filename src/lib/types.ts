@@ -78,6 +78,7 @@ export type AppStatus =
 export interface AppSettings {
     showTimer: boolean;
     reminderTime: string;
+    executionMode: ExecutionMode;
 }
 
 export interface AppData {

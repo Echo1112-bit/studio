@@ -15,6 +15,7 @@ const LOCAL_STORAGE_KEY_PREFIX = 'pro-coach-ai-data-v4';
 const defaultSettings: AppSettings = {
     showTimer: true,
     reminderTime: '9:00 AM',
+    executionMode: 'focus',
 };
 
 const defaultAppData: AppData = {
@@ -286,8 +287,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newGoals = data.goals.map(g => 
         g.id === data.activeGoalId ? {...g, currentStepIndex: 0} : g
     );
-    updateData({ appStatus: 'execution', goals: newGoals });
-  }, [updateData, data.activeGoalId, data.goals]);
+    const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'action_plan';
+    updateData({ appStatus: targetStatus, goals: newGoals });
+  }, [updateData, data.activeGoalId, data.goals, data.settings.executionMode]);
 
   const continueGoal = useCallback((goalId: string) => {
     const goalToContinue = data.goals.find(g => g.id === goalId);
@@ -313,10 +315,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       } else {
         goalUpdate.currentStepIndex = firstUncompletedIndex;
         const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
-        updateData({ goals: newGoals, activeGoalId: goalId, appStatus: 'execution', coachId: goalToContinue.coachId });
+        const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'action_plan';
+        updateData({ goals: newGoals, activeGoalId: goalId, appStatus: targetStatus, coachId: goalToContinue.coachId });
       }
     }
-  }, [data.goals, updateData]);
+  }, [data.goals, updateData, data.settings.executionMode]);
   
   const completeStep = useCallback((timeSpent: number) => {
     if (!activeGoal) return;

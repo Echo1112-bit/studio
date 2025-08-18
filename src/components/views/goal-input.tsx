@@ -13,10 +13,12 @@ import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { ExecutionMode } from '@/lib/types';
 
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals, markGoalAsComplete } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals, markGoalAsComplete, updateSetting } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [api, setApi] = useState<CarouselApi>();
   const { toast } = useToast();
@@ -126,10 +128,26 @@ export default function GoalInput() {
             {todayGoals.length > 0 && (
                  <Card className="mt-4 flex-1 flex flex-col min-h-0">
                     <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <ListTodo className="h-5 w-5" />
-                            Today's List
-                        </CardTitle>
+                        <div className="flex justify-between items-center">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <ListTodo className="h-5 w-5" />
+                                Today's List
+                            </CardTitle>
+                             <Tabs 
+                                value={data.settings.executionMode} 
+                                onValueChange={(value) => updateSetting('executionMode', value as ExecutionMode)}
+                                className="w-auto"
+                            >
+                                <TabsList>
+                                    <TabsTrigger value="focus">
+                                        <Zap className="h-4 w-4 mr-1"/> Focus
+                                    </TabsTrigger>
+                                    <TabsTrigger value="checklist">
+                                        <CheckSquare className="h-4 w-4 mr-1"/> Checklist
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                        </div>
                         <CardDescription>
                             Here are the tasks for today. Let's get them done!
                         </CardDescription>
@@ -151,8 +169,8 @@ export default function GoalInput() {
                                         </div>
                                         <div className="flex items-center gap-2 text-muted-foreground ml-2">
                                            {goal.actionPlan.recommendedMode === 'focus' 
-                                                ? <Zap className="h-4 w-4" title="Focus Mode" />
-                                                : <CheckSquare className="h-4 w-4" title="Checklist Mode" />
+                                                ? <Zap className="h-4 w-4" title="Recommended: Focus Mode" />
+                                                : <CheckSquare className="h-4 w-4" title="Recommended: Checklist Mode" />
                                             }
                                              <Checkbox 
                                                 id={`goal-${goal.id}`}
