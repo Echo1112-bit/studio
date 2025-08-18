@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppContext } from '@/context/app-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Clock, Settings, CheckCircle2, Circle } from 'lucide-react';
+import { ArrowLeft, Clock, Settings, CheckCircle2, Circle, Pause, Play } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,8 +21,30 @@ import { cn } from '@/lib/utils';
 
 
 export default function ChecklistExecution() {
-  const { activeGoal, coach, backToGoalInput, viewSettings, toggleStepInChecklist } = useAppContext();
+  const { data, activeGoal, coach, backToGoalInput, viewSettings, toggleStepInChecklist, addTimeToGoal } = useAppContext();
   const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) {
+        return;
+    }
+    const interval = setInterval(() => {
+      setSeconds((s) => s + 1);
+    }, 1000);
+    return () => {
+        clearInterval(interval);
+        addTimeToGoal(seconds);
+        setSeconds(0);
+    };
+  }, [isPaused]);
+  
+  const formatTime = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
 
   if (!coach || !activeGoal || !activeGoal.actionPlan) return null;
 
@@ -59,6 +81,17 @@ export default function ChecklistExecution() {
                 </CardContent>
             </Card>
 
+            {data.settings.showTimer && (
+                <div className="flex items-center justify-center gap-4 p-2 bg-card rounded-md border">
+                    <div className="text-center font-mono text-sm flex-1">
+                        ⏱️ Focused for {formatTime(seconds)}
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)}>
+                        {isPaused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
+                    </Button>
+                </div>
+            )}
+
             <div className="space-y-2">
               {activeGoal.actionPlan.steps.map((step) => {
                   const isStepCompleted = activeGoal.completedSteps.includes(step.stepNumber);
@@ -68,7 +101,13 @@ export default function ChecklistExecution() {
                         className={cn(
                             "flex items-start gap-3 p-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-card/80 bg-card",
                         )}
-                        onClick={() => toggleStepInChecklist(activeGoal.id, step.stepNumber)}
+                        onClick={() => {
+                            if (!isStepCompleted) {
+                                addTimeToGoal(seconds);
+                                setSeconds(0);
+                            }
+                            toggleStepInChecklist(activeGoal.id, step.stepNumber)
+                        }}
                     >
                         <div>
                             {isStepCompleted ? (
@@ -95,12 +134,15 @@ export default function ChecklistExecution() {
           <AlertDialogHeader>
               <AlertDialogTitle>Leave Current Goal?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will cancel the current plan and you'll lose progress. You can always generate a new one.
+                You can continue this goal later from your Archives. Your focus time on this screen will be saved.
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
               <AlertDialogCancel>Stay Here</AlertDialogCancel>
-              <AlertDialogAction onClick={backToGoalInput}>
+              <AlertDialogAction onClick={() => {
+                  addTimeToGoal(seconds);
+                  backToGoalInput();
+              }}>
                 Go to Home
               </AlertDialogAction>
           </AlertDialogFooter>

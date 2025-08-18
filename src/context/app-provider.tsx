@@ -69,6 +69,7 @@ interface AppContextType {
   toggleStepCompletion: (goalId: string, stepNumber: number) => void;
   toggleStepInChecklist: (goalId: string, stepNumber: number) => void;
   markGoalAsComplete: (goalId: string) => void;
+  addTimeToGoal: (seconds: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -289,8 +290,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newGoals = data.goals.map(g => 
         g.id === data.activeGoalId ? {...g, currentStepIndex: 0} : g
     );
-    const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'action_plan';
-    updateData({ appStatus: targetStatus, goals: newGoals });
+    updateData({ appStatus: 'execution', goals: newGoals });
   }, [updateData, data.activeGoalId, data.goals, data.settings.executionMode]);
 
   const continueGoal = useCallback((goalId: string) => {
@@ -569,6 +569,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
   }, [data.goals, data.activeGoalId, updateData]);
 
+  const addTimeToGoal = useCallback((seconds: number) => {
+      if (!activeGoal || seconds === 0) return;
+      const newGoals = data.goals.map(g => {
+          if (g.id === activeGoal.id) {
+              return {
+                  ...g,
+                  totalTimeSpent: g.totalTimeSpent + seconds,
+                  stepHistory: [...g.stepHistory, {
+                    stepIndex: -1, // Indicates time spent on the checklist view itself
+                    timeSpent: seconds,
+                    completedAt: new Date().toISOString()
+                  }],
+              }
+          }
+          return g;
+      });
+      updateData({ goals: newGoals });
+  }, [activeGoal, data.goals, updateData]);
+
   const value: AppContextType = {
     data,
     coach,
@@ -597,6 +616,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     toggleStepCompletion,
     toggleStepInChecklist,
     markGoalAsComplete,
+    addTimeToGoal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
