@@ -11,12 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { coachList, coaches } from '@/lib/coaches';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { format, isToday } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
+
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals, markGoalAsComplete } = useAppContext();
   const [goalText, setGoalText] = useState('');
-  const [api, setApi] = useState<CarouselApi>()
+  const [api, setApi] = useState<CarouselApi>();
+  const { toast } = useToast();
 
   const displayCoach = coach || (data.coachId ? coaches[data.coachId] : coachList[0]);
 
@@ -26,6 +29,14 @@ export default function GoalInput() {
       setGoalText('');
     }
   };
+
+  const handleCheck = (goalId: string, goalTitle: string) => {
+    markGoalAsComplete(goalId);
+    toast({
+        title: "🎉 Goal Completed!",
+        description: `You've successfully completed "${goalTitle}".`
+    });
+  }
 
   useEffect(() => {
     if (!api) {
@@ -127,22 +138,29 @@ export default function GoalInput() {
                         <ScrollArea className="h-full">
                             <div className="space-y-2 pr-3">
                                 {todayGoals.map(goal => (
-                                    <button
+                                    <div
                                         key={goal.id}
-                                        onClick={() => continueGoal(goal.id)}
-                                        className="w-full text-left p-3 rounded-lg border bg-background hover:bg-secondary transition-all flex items-center justify-between"
+                                        className="w-full text-left p-2 rounded-lg border bg-background flex items-center justify-between"
                                     >
-                                        <div className="flex items-center gap-3">
+                                        <div 
+                                            className="flex items-center gap-3 flex-1 cursor-pointer"
+                                            onClick={() => continueGoal(goal.id)}
+                                        >
                                             <span className="text-xl">{coaches[goal.coachId].emoji}</span>
                                             <p className="font-semibold">{goal.title}</p>
                                         </div>
-                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                        <div className="flex items-center gap-2 text-muted-foreground ml-2">
                                            {goal.actionPlan.recommendedMode === 'focus' 
                                                 ? <Zap className="h-4 w-4" title="Focus Mode" />
                                                 : <CheckSquare className="h-4 w-4" title="Checklist Mode" />
                                             }
+                                             <Checkbox 
+                                                id={`goal-${goal.id}`}
+                                                className="ml-2 h-5 w-5"
+                                                onCheckedChange={() => handleCheck(goal.id, goal.title)}
+                                            />
                                         </div>
-                                    </button>
+                                    </div>
                                 ))}
                             </div>
                         </ScrollArea>

@@ -230,7 +230,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const todayGoals = useMemo(() => {
     return data.goals.filter(goal => 
       goal.status === 'in-progress' && 
-      goal.actionPlan?.targetDate && // Ensure targetDate exists
+      goal.actionPlan?.targetDate &&
       isSameDay(parseISO(goal.actionPlan.targetDate), new Date())
     );
   }, [data.goals]);
@@ -513,8 +513,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           }
           return g;
       });
-      updateData({ goals: newGoals });
-  }, [data.goals, updateData]);
+      updateData({ 
+        goals: newGoals,
+        activeGoalId: data.activeGoalId === goalId ? undefined : data.activeGoalId,
+      });
+  }, [data.goals, data.activeGoalId, updateData]);
 
   const value: AppContextType = {
     data,
