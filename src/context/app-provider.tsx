@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { AppData, AppSettings, AppStatus, Coach, CoachId, Goal } from '@/lib/types';
 import { coaches, coachList } from '@/lib/coaches';
-import { generateActionPlan } from '@/ai/flows/personalized-action-plan-generation';
+import { generateActionPlanAction } from '@/ai/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './auth-provider';
 import { isSameDay, startOfWeek, differenceInCalendarDays, startOfToday } from 'date-fns';
@@ -234,7 +234,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!data.coachId) return;
     updateData({ appStatus: 'generating_plan' });
     try {
-      const plan = await generateActionPlan({ goal: title, coachPersonality: coaches[data.coachId].name as any });
+      const plan = await generateActionPlanAction({ goal: title, coachPersonality: coaches[data.coachId].name as any });
       const newGoal: Goal = {
         id: new Date().toISOString(),
         title,

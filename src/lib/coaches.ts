@@ -1,3 +1,4 @@
+
 import type { Coach, CoachId } from './types';
 
 export const coaches: Record<CoachId, Coach> = {
