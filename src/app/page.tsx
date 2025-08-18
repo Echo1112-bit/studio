@@ -13,6 +13,7 @@ import Archive from '@/components/views/archive';
 import PersonalCenter from '@/components/views/personal-center';
 import Settings from '@/components/views/settings';
 import Login from '@/components/views/login';
+import ChecklistExecution from '@/components/views/checklist-execution';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -54,6 +55,8 @@ export default function Home() {
         );
       case 'action_plan':
         return <ActionPlan />;
+      case 'checklist_execution':
+        return <ChecklistExecution />;
       case 'execution':
         return <Execution />;
       case 'step_completion':
@@ -78,7 +81,7 @@ export default function Home() {
   return (
     <main className={cn(
         "flex flex-1 flex-col",
-        (appStatus === 'goal_input' || appStatus === 'generating_plan') && 'bg-muted'
+        (appStatus === 'goal_input' || appStatus === 'generating_plan' || appStatus === 'checklist_execution') && 'bg-muted'
     )}>
       {appStatus === 'loading' ? (
         <div className="flex flex-1 flex-col items-center justify-center">

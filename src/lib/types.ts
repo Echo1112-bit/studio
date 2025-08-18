@@ -73,7 +73,8 @@ export type AppStatus =
   | 'final_celebration'
   | 'archive'
   | 'personal_center'
-  | 'settings';
+  | 'settings'
+  | 'checklist_execution';
 
 export interface AppSettings {
     showTimer: boolean;

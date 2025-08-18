@@ -67,6 +67,7 @@ interface AppContextType {
   deleteGoal: (goalId: string) => void;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
   toggleStepCompletion: (goalId: string, stepNumber: number) => void;
+  toggleStepInChecklist: (goalId: string, stepNumber: number) => void;
   markGoalAsComplete: (goalId: string) => void;
 }
 
@@ -185,10 +186,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     
     const bestStreak = Math.max(data.bestStreak || 0, currentStreak);
 
-    const todayCompletedCount = completedGoals.filter(g => new Date(g.completedAt!) >= todayStart).length;
+    const todayCompletedCount = completedGoals.filter(g => g.completedAt && new Date(g.completedAt) >= todayStart).length;
     
     const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
-    const thisWeekCompleted = completedGoals.filter(g => new Date(g.completedAt!) >= weekStart).length;
+    const thisWeekCompleted = completedGoals.filter(g => g.completedAt && new Date(g.completedAt) >= weekStart).length;
 
     const totalFocusTime = allGoals.reduce((acc, goal) => acc + goal.totalTimeSpent, 0);
     const todayFocusTime = allGoals.reduce((acc, goal) => {
@@ -264,11 +265,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       };
       
       const newGoals = [...data.goals, newGoal];
+      const targetStatus: AppStatus = data.settings.executionMode === 'focus' ? 'action_plan' : 'checklist_execution';
       
       updateData({ 
         goals: newGoals,
         activeGoalId: newGoal.id,
-        appStatus: 'action_plan'
+        appStatus: targetStatus
       });
 
     } catch (error) {
@@ -280,7 +282,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
       updateData({ appStatus: 'goal_input' });
     }
-  }, [data.coachId, data.goals, updateData, toast]);
+  }, [data.coachId, data.goals, data.settings.executionMode, updateData, toast]);
 
   const startPlan = useCallback(() => {
     if (!data.activeGoalId) return;
@@ -305,7 +307,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // If all steps are somehow complete but status is 'in-progress', or no uncompleted step found
-      if (firstUncompletedIndex === -1) {
+      if (firstUncompletedIndex === -1 && goalUpdate.status === 'in-progress') {
          goalUpdate.status = 'completed';
          goalUpdate.completedAt = new Date().toISOString();
          goalUpdate.currentStepIndex = -1;
@@ -315,7 +317,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       } else {
         goalUpdate.currentStepIndex = firstUncompletedIndex;
         const newGoals = data.goals.map(g => g.id === goalId ? goalUpdate : g);
-        const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'action_plan';
+        const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'checklist_execution';
         updateData({ goals: newGoals, activeGoalId: goalId, appStatus: targetStatus, coachId: goalToContinue.coachId });
       }
     }
@@ -439,17 +441,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const exitSettings = useCallback(() => {
     if (data.activeGoalId) {
       const activeGoal = data.goals.find((g) => g.id === data.activeGoalId);
-      if (activeGoal?.status === 'in-progress' && activeGoal.currentStepIndex > -1) {
-        updateData({appStatus: 'execution'});
-        return;
-      }
-      if (activeGoal?.status === 'in-progress' && activeGoal.currentStepIndex === -1) {
-        updateData({appStatus: 'action_plan'});
-        return;
+      if(activeGoal?.status === 'in-progress') {
+        const targetStatus = data.settings.executionMode === 'focus' ? 'execution' : 'checklist_execution';
+        if (activeGoal.currentStepIndex === -1 && targetStatus === 'checklist_execution') {
+           updateData({appStatus: 'checklist_execution'});
+           return;
+        }
+        if (activeGoal.currentStepIndex > -1) {
+            updateData({appStatus: targetStatus});
+            return;
+        }
+        if (activeGoal.currentStepIndex === -1 && targetStatus === 'focus') {
+           updateData({appStatus: 'action_plan'});
+           return;
+        }
       }
     }
     updateData({ appStatus: 'goal_input' });
-  }, [updateData, data.activeGoalId, data.goals]);
+  }, [updateData, data.activeGoalId, data.goals, data.settings.executionMode]);
+
 
   const deleteGoal = useCallback((goalId: string) => {
     const newGoals = data.goals.filter(g => g.id !== goalId);
@@ -503,6 +513,43 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     updateData({ goals: newGoals });
   }, [data.goals, updateData]);
 
+  const toggleStepInChecklist = useCallback((goalId: string, stepNumber: number) => {
+    let goalCompleted = false;
+    const newGoals = data.goals.map(g => {
+        if (g.id === goalId) {
+            const completedSteps = g.completedSteps || [];
+            const isCompleted = completedSteps.includes(stepNumber);
+            const newCompletedSteps = isCompleted 
+                ? completedSteps.filter(sn => sn !== stepNumber) 
+                : [...completedSteps, stepNumber];
+            
+            const allStepsCompleted = g.actionPlan.steps.every(step => newCompletedSteps.includes(step.stepNumber));
+            if (allStepsCompleted) {
+                goalCompleted = true;
+            }
+
+            return {
+                ...g,
+                completedSteps: newCompletedSteps,
+                status: allStepsCompleted ? 'completed' : 'in-progress',
+                completedAt: allStepsCompleted ? new Date().toISOString() : undefined,
+            };
+        }
+        return g;
+    });
+
+    if (goalCompleted) {
+      updateData({
+          goals: newGoals,
+          appStatus: 'final_celebration',
+          bestStreak: Math.max(data.bestStreak || 0, stats.streak)
+      })
+    } else {
+      updateData({ goals: newGoals });
+    }
+  }, [data.goals, updateData, data.bestStreak, stats.streak]);
+
+
   const markGoalAsComplete = useCallback((goalId: string) => {
       const newGoals = data.goals.map(g => {
           if(g.id === goalId) {
@@ -548,6 +595,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     deleteGoal,
     updateSetting,
     toggleStepCompletion,
+    toggleStepInChecklist,
     markGoalAsComplete,
   };
 

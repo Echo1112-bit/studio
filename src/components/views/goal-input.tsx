@@ -114,14 +114,30 @@ export default function GoalInput() {
                         className="text-base resize-none"
                         rows={3}
                     />
-                    <Button
-                        onClick={handleGenerate}
-                        disabled={!goalText.trim()}
-                        className="w-full text-lg h-12 font-bold"
-                        style={{ backgroundColor: displayCoach.colors.primary }}
-                    >
-                        Create Plan
-                    </Button>
+                    <div className="flex justify-between items-center">
+                        <Tabs 
+                            value={data.settings.executionMode} 
+                            onValueChange={(value) => updateSetting('executionMode', value as ExecutionMode)}
+                            className="w-auto"
+                        >
+                            <TabsList className="grid grid-cols-2">
+                                <TabsTrigger value="focus">
+                                    <Zap className="h-4 w-4 mr-1"/> Focus
+                                </TabsTrigger>
+                                <TabsTrigger value="checklist">
+                                    <CheckSquare className="h-4 w-4 mr-1"/> Checklist
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                        <Button
+                            onClick={handleGenerate}
+                            disabled={!goalText.trim()}
+                            className="font-bold"
+                            style={{ backgroundColor: displayCoach.colors.primary }}
+                        >
+                            Create Plan
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -133,20 +149,6 @@ export default function GoalInput() {
                                 <ListTodo className="h-5 w-5" />
                                 Today's List
                             </CardTitle>
-                             <Tabs 
-                                value={data.settings.executionMode} 
-                                onValueChange={(value) => updateSetting('executionMode', value as ExecutionMode)}
-                                className="w-auto"
-                            >
-                                <TabsList>
-                                    <TabsTrigger value="focus">
-                                        <Zap className="h-4 w-4 mr-1"/> Focus
-                                    </TabsTrigger>
-                                    <TabsTrigger value="checklist">
-                                        <CheckSquare className="h-4 w-4 mr-1"/> Checklist
-                                    </TabsTrigger>
-                                </TabsList>
-                            </Tabs>
                         </div>
                         <CardDescription>
                             Here are the tasks for today. Let's get them done!
