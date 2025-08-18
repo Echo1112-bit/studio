@@ -8,7 +8,7 @@ import { coaches, coachList } from '@/lib/coaches';
 import { generateActionPlanAction } from '@/ai/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './auth-provider';
-import { isSameDay, startOfWeek, differenceInCalendarDays, startOfToday, parseISO } from 'date-fns';
+import { isSameDay, startOfWeek, differenceInCalendarDays, startOfToday, parseISO, format } from 'date-fns';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'pro-coach-ai-data-v4';
 
@@ -228,7 +228,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const todayGoals = useMemo(() => {
-    return data.goals.filter(goal => goal.status === 'in-progress' && isSameDay(parseISO(goal.actionPlan.targetDate), new Date()));
+    return data.goals.filter(goal => 
+      goal.status === 'in-progress' && 
+      goal.actionPlan?.targetDate && // Ensure targetDate exists
+      isSameDay(parseISO(goal.actionPlan.targetDate), new Date())
+    );
   }, [data.goals]);
 
   const setCoach = useCallback((coachId: CoachId) => {
