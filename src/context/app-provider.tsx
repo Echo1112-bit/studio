@@ -414,12 +414,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [updateData]);
 
   const exitSettings = useCallback(() => {
-    if(data.activeGoalId){
-        const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
-        if(activeGoal?.status === 'in-progress'){
-            updateData({ appStatus: 'execution' });
-            return;
-        }
+    if (data.activeGoalId) {
+      const activeGoal = data.goals.find((g) => g.id === data.activeGoalId);
+      if (activeGoal?.status === 'in-progress' && activeGoal.currentStepIndex > -1) {
+        updateData({appStatus: 'execution'});
+        return;
+      }
+      if (activeGoal?.status === 'in-progress' && activeGoal.currentStepIndex === -1) {
+        updateData({appStatus: 'action_plan'});
+        return;
+      }
     }
     updateData({ appStatus: 'goal_input' });
   }, [updateData, data.activeGoalId, data.goals]);
@@ -530,5 +534,3 @@ export const useAppContext = (): AppContextType => {
   }
   return context;
 };
-
-    
