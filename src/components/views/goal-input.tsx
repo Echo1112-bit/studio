@@ -114,21 +114,7 @@ export default function GoalInput() {
                         className="text-base resize-none"
                         rows={3}
                     />
-                    <div className="flex justify-between items-center">
-                        <Tabs 
-                            value={data.settings.executionMode} 
-                            onValueChange={(value) => updateSetting('executionMode', value as ExecutionMode)}
-                            className="w-auto"
-                        >
-                            <TabsList className="grid grid-cols-2">
-                                <TabsTrigger value="focus">
-                                    <Zap className="h-4 w-4 mr-1"/> Focus
-                                </TabsTrigger>
-                                <TabsTrigger value="checklist">
-                                    <CheckSquare className="h-4 w-4 mr-1"/> Checklist
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
+                    <div className="flex justify-end items-center">
                         <Button
                             onClick={handleGenerate}
                             disabled={!goalText.trim()}
@@ -140,6 +126,21 @@ export default function GoalInput() {
                     </div>
                 </CardContent>
             </Card>
+
+            <Tabs 
+                value={data.settings.executionMode} 
+                onValueChange={(value) => updateSetting('executionMode', value as ExecutionMode)}
+                className="w-full max-w-xs mx-auto pt-4"
+            >
+                <TabsList className="grid grid-cols-2">
+                    <TabsTrigger value="focus">
+                        <Zap className="h-4 w-4 mr-1"/> Focus
+                    </TabsTrigger>
+                    <TabsTrigger value="checklist">
+                        <CheckSquare className="h-4 w-4 mr-1"/> Checklist
+                    </TabsTrigger>
+                </TabsList>
+            </Tabs>
 
             {todayGoals.length > 0 && (
                  <Card className="mt-4 flex-1 flex flex-col min-h-0">
