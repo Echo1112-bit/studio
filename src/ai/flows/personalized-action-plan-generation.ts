@@ -48,18 +48,16 @@ const prompt = ai.definePrompt({
 1.  Analyze the user's goal and the current date ({{currentDate}}).
 2.  Determine the most appropriate target date for this goal. If the user mentions a specific day (e.g., "this Friday", "tomorrow"), calculate that date. Otherwise, assume today.
 3.  Decide the best execution mode: 'focus' for quick, single-session tasks, and 'checklist' for larger projects.
-4.  Break down the goal into 5-10 manageable steps following the "Difficulty Rhythm Curve" (easy -> hard -> easy).
+4.  Break down the goal into 5-20 manageable steps following the "Difficulty Rhythm Curve" (easy -> hard -> easy).
 5.  Embody the selected coach's personality in all generated text.
 
 **Execution Rules:**
 
 *   **Target Date & Mode**: First, determine the 'targetDate' and 'recommendedMode'.
-*   **Difficulty Rhythm Curve**:
-    1.  **Warm-up (2 steps)**: Step 1 (<5 min), Step 2 (<8 min).
-    2.  **Ramp-up (Medium)**: <15 min.
-    3.  **Peak (Hardest)**: <25 min.
-    4.  **Buffer (Medium)**: <15 min.
-    5.  **Cool-down (Easy)**: <8 min.
+*   **Difficulty Rhythm Curve**: The difficulty of tasks should generally start easy, ramp up to the hardest tasks in the middle, and then cool down with easier tasks at the end. The number of steps can vary based on the complexity of the goal.
+    1.  **Warm-up (Easy)**: The first couple of steps should be very quick and simple (e.g., under 5 minutes) to build momentum.
+    2.  **Peak (Hardest)**: The most challenging or time-consuming steps should be in the middle of the plan.
+    3.  **Cool-down (Easy)**: The final steps should be easy to complete, providing a sense of accomplishment.
 *   **Output Fields**: Each step must have an 'emoji', 'actionTitle' (6-10 words), and 'coachGuidance' (12-20 words). The 'coachComment' must be 10-20 words.
 
 **Coach Personalities:**
