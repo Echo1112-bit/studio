@@ -91,9 +91,9 @@ export default function PersonalCenter() {
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
   };
-
-  const dailyGoalTarget = 3;
-  const goalsCompletedProgress = Math.min((stats.todayCompletedCount / dailyGoalTarget) * 100, 100);
+  
+  const totalGoalsProgress = (stats.completedCount / (stats.quickStats.totalGoals || 1)) * 100;
+  const totalStepsProgress = (stats.totalCompletedSteps / (stats.quickStats.totalSteps || 1)) * 100;
 
   return (
     <div className="flex flex-1 flex-col bg-muted">
@@ -136,15 +136,14 @@ export default function PersonalCenter() {
                  <StatCard 
                     icon={<Target size={16} />}
                     title="Goals Completed"
-                    value={`${stats.todayCompletedCount} / ${dailyGoalTarget}`}
-                    progress={goalsCompletedProgress}
-                    progressText="Today's Target"
+                    value={`${stats.completedCount} / ${stats.quickStats.totalGoals}`}
+                    progress={totalGoalsProgress}
                 />
                  <StatCard 
-                    icon={<BarChart size={16} />}
-                    title="In Progress"
-                    value={`${stats.inProgressCount} Goals`}
-                    subtitle={`${stats.totalStepsRemainingForInProgressGoals} steps remaining`}
+                    icon={<CheckSquare size={16} />}
+                    title="Steps Completed"
+                    value={`${stats.totalCompletedSteps} / ${stats.quickStats.totalSteps}`}
+                    progress={totalStepsProgress}
                 />
             </div>
         </div>

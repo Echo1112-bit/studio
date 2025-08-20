@@ -42,6 +42,7 @@ interface AppContextType {
       totalFocusTime: number;
       todayFocusTime: number;
       totalStepsRemainingForInProgressGoals: number;
+      totalCompletedSteps: number;
       quickStats: {
         totalGoals: number;
         totalSteps: number;
@@ -209,6 +210,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const totalGoals = allGoals.length;
     const totalSteps = allGoals.reduce((sum, goal) => sum + goal.actionPlan.steps.length, 0);
     const avgStepsPerGoal = totalGoals > 0 ? totalSteps / totalGoals : 0;
+    const totalCompletedSteps = allGoals.reduce((sum, goal) => sum + goal.completedSteps.length, 0);
 
     return {
         streak: currentStreak,
@@ -220,6 +222,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         totalFocusTime,
         todayFocusTime,
         totalStepsRemainingForInProgressGoals,
+        totalCompletedSteps,
         quickStats: {
             totalGoals,
             totalSteps,
