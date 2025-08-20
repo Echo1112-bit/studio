@@ -38,10 +38,10 @@ interface AppContextType {
       todayCompletedCount: number;
       thisWeekCompleted: number;
       completedCount: number;
+      inProgressCount: number;
       totalFocusTime: number;
       todayFocusTime: number;
-      totalStepsForInProgressGoals: number;
-      totalStepsCompletedForInProgressGoals: number;
+      totalStepsRemainingForInProgressGoals: number;
       quickStats: {
         totalGoals: number;
         totalSteps: number;
@@ -200,8 +200,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         return acc + todayStepsTime;
     }, 0);
 
-    const totalStepsForInProgressGoals = inProgressGoals.reduce((acc, goal) => acc + goal.actionPlan.steps.length, 0);
-    const totalStepsCompletedForInProgressGoals = inProgressGoals.reduce((acc, goal) => acc + (goal.currentStepIndex > 0 ? goal.currentStepIndex : 0), 0);
+    const totalStepsRemainingForInProgressGoals = inProgressGoals.reduce((acc, goal) => {
+        const totalSteps = goal.actionPlan.steps.length;
+        const completedSteps = goal.completedSteps.length;
+        return acc + (totalSteps - completedSteps);
+    }, 0);
     
     const totalGoals = allGoals.length;
     const totalSteps = allGoals.reduce((sum, goal) => sum + goal.actionPlan.steps.length, 0);
@@ -213,10 +216,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         todayCompletedCount,
         thisWeekCompleted,
         completedCount: completedGoals.length,
+        inProgressCount: inProgressGoals.length,
         totalFocusTime,
         todayFocusTime,
-        totalStepsForInProgressGoals,
-        totalStepsCompletedForInProgressGoals,
+        totalStepsRemainingForInProgressGoals,
         quickStats: {
             totalGoals,
             totalSteps,
@@ -266,12 +269,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       };
       
       const newGoals = [...data.goals, newGoal];
-      const targetStatus: AppStatus = data.settings.executionMode === 'focus' ? 'action_plan' : 'checklist_execution';
       
       updateData({ 
         goals: newGoals,
         activeGoalId: newGoal.id,
-        appStatus: targetStatus
+        appStatus: 'action_plan'
       });
 
     } catch (error) {
@@ -283,14 +285,35 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
       updateData({ appStatus: 'goal_input' });
     }
-  }, [data.coachId, data.goals, data.settings.executionMode, updateData, toast]);
+  }, [data.coachId, data.goals, updateData, toast]);
 
   const startPlan = useCallback(() => {
     if (!data.activeGoalId) return;
+    
+    const activeGoal = data.goals.find(g => g.id === data.activeGoalId);
+    if (!activeGoal) return;
+
+    let firstUncompletedIndex = -1;
+    for (let i = 0; i < activeGoal.actionPlan.steps.length; i++) {
+        if (!activeGoal.completedSteps.includes(activeGoal.actionPlan.steps[i].stepNumber)) {
+            firstUncompletedIndex = i;
+            break;
+        }
+    }
+    
+    if (firstUncompletedIndex === -1) {
+        // This case should ideally not happen if startPlan is called on an in-progress goal,
+        // but as a fallback, we can treat it as completed.
+        markGoalAsComplete(data.activeGoalId);
+        return;
+    }
+
     const newGoals = data.goals.map(g => 
-        g.id === data.activeGoalId ? {...g, currentStepIndex: 0} : g
+        g.id === data.activeGoalId ? {...g, currentStepIndex: firstUncompletedIndex} : g
     );
-    updateData({ appStatus: 'execution', goals: newGoals });
+
+    const targetStatus: AppStatus = data.settings.executionMode === 'focus' ? 'execution' : 'checklist_execution';
+    updateData({ appStatus: targetStatus, goals: newGoals });
   }, [updateData, data.activeGoalId, data.goals, data.settings.executionMode]);
 
   const continueGoal = useCallback((goalId: string) => {
@@ -306,7 +329,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      // If all steps are somehow complete but status is 'in-progress', or no uncompleted step found
       if (firstUncompletedIndex === -1 && goalUpdate.status === 'in-progress') {
          goalUpdate.status = 'completed';
          goalUpdate.completedAt = new Date().toISOString();
