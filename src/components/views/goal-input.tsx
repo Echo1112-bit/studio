@@ -5,20 +5,18 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, BookOpen, User, ListTodo, Zap, CheckSquare } from 'lucide-react';
+import { Settings, BookOpen, User, Zap, CheckSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-provider';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { coachList, coaches } from '@/lib/coaches';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ExecutionMode } from '@/lib/types';
 
 
 export default function GoalInput() {
-  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, continueGoal, todayGoals, markGoalAsComplete, updateSetting } = useAppContext();
+  const { data, setGoal, viewArchive, viewPersonalCenter, coach, viewSettings, setCoach, updateSetting } = useAppContext();
   const [goalText, setGoalText] = useState('');
   const [api, setApi] = useState<CarouselApi>();
   const { toast } = useToast();
@@ -31,14 +29,6 @@ export default function GoalInput() {
       setGoalText('');
     }
   };
-
-  const handleCheck = (goalId: string, goalTitle: string) => {
-    markGoalAsComplete(goalId);
-    toast({
-        title: "🎉 Goal Completed!",
-        description: `You've successfully completed "${goalTitle}".`
-    });
-  }
 
   useEffect(() => {
     if (!api) {
@@ -141,53 +131,6 @@ export default function GoalInput() {
                     </TabsTrigger>
                 </TabsList>
             </Tabs>
-
-            {todayGoals.length > 0 && (
-                 <Card className="mt-4 flex-1 flex flex-col min-h-0">
-                    <CardHeader>
-                        <div className="flex justify-between items-center">
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <ListTodo className="h-5 w-5" />
-                                Today's List
-                            </CardTitle>
-                        </div>
-                        <CardDescription>
-                            Here are the tasks for today. Let's get them done!
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-1 overflow-hidden px-3 pb-3">
-                        <ScrollArea className="h-full">
-                            <div className="space-y-2 pr-3">
-                                {todayGoals.map(goal => (
-                                    <div
-                                        key={goal.id}
-                                        className="w-full text-left p-2 rounded-lg border bg-background flex items-center justify-between"
-                                    >
-                                        <div 
-                                            className="flex items-center gap-3 flex-1 cursor-pointer"
-                                            onClick={() => continueGoal(goal.id)}
-                                        >
-                                            <span className="text-xl">{coaches[goal.coachId].emoji}</span>
-                                            <p className="font-semibold">{goal.title}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-muted-foreground ml-2">
-                                           {goal.actionPlan.recommendedMode === 'focus' 
-                                                ? <Zap className="h-4 w-4" title="Recommended: Focus Mode" />
-                                                : <CheckSquare className="h-4 w-4" title="Recommended: Checklist Mode" />
-                                            }
-                                             <Checkbox 
-                                                id={`goal-${goal.id}`}
-                                                className="ml-2 h-5 w-5"
-                                                onCheckedChange={() => handleCheck(goal.id, goal.title)}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-            )}
         </main>
       </div>
     </>
